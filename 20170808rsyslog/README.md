@@ -147,7 +147,7 @@ writeLog(514,'127.0.0.1','<142>Jul 26 21:02:30 127.0.0.1 hello！local1.info!')�
 #### PRI：
 那你<142>怎么来的呢？<br />
 因为local1.info对应的Facility是17，Severity是6 <br />
-而PRI计算规则是Facility*8+6即是17*8+6=142 <br />
+而PRI计算规则是Facility*8+6即是17乘8+6=142 <br />
 #### TIME：
 Jul 26 21:02:30 就是时间
 #### IP或主机名
