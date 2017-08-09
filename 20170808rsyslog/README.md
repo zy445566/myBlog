@@ -1,7 +1,7 @@
 # 教你一步一步利用rsyslog搭建自己的日志系统
 ## rsys是什么
 rsyslog 是一个syslog的升级版，可用于处理大型的系统的日志需求。并且可以把输入到日志转换到各个数据系统上，如图。
-
+![rsyslog](https://raw.githubusercontent.com/zy445566/myBlog/master/20170808rsyslog/imgs/rsyslog.png)
 ## 教程开始
 本教材使用centos系统，其他系统只能作为参考作用
 
@@ -138,20 +138,20 @@ Severity:日志等级
 ```
 ### 问题又来了，我们应该如何写入进local1.info的local1.info.log文件中呢？
 这里就涉及到syslog的日志协议了，如图
-
+![syslog-stant](https://raw.githubusercontent.com/zy445566/myBlog/master/20170808rsyslog/imgs/syslog-stant.png)
 比如我们要发送到local1.info中
 ```js
-writeLog(514,'127.0.0.1','<142>Jul 26 21:02:30 127.0.0.1 hello！local1.info!')；
+writeLog(514,'127.0.0.1','<142>Jul 26 21:02:30 127.0.0.1 hello！local1.info!')；
 ```
 ### 那我们来拆解着一段
 #### PRI：
 那你<142>怎么来的呢？<br />
-因为local1.info对应的Facility是17，Severity是6 <br />
+因为local1.info对应的Facility是17，Severity是6 <br />
 而PRI计算规则是Facility*8+6即是17*8+6=142 <br />
 #### TIME：
 Jul 26 21:02:30 就是时间
 #### IP或主机名
-127.0.0.1 就是ip，你也可以填写你的主机名如 zsComputer
+127.0.0.1 就是ip，你也可以填写你的主机名如 zsComputer
 #### 我们要发送的消息
 hello！local1.info!
 
