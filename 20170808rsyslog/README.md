@@ -23,10 +23,10 @@ sudo vim /etc/rsyslog.conf
 ```ini
 # Provides UDP syslog reception
 $ModLoad imudp #打开udp模块
-$UDPServerRun 514 #打开udp服务，并监听514端口
+$UDPServerRun 514 #打开udp服务，并监听514端口
 # Provides TCP syslog reception
 $ModLoad imtcp #打开tcp模块
-$InputTCPServerRun 514 #打开tcp服务，并监听514端口
+$InputTCPServerRun 514 #打开tcp服务，并监听514端口
 ```
 然后重启我们的服务
 ```sh
@@ -34,7 +34,7 @@ sudo service rsyslog restart
 ```
 
 ## 如何使用我们的node进行连接来写入日志
-其实这一步很简单，根据上面开启的服务，直接使用原生的socket即可<br />
+其实这一步很简单，根据上面开启的服务，直接使用原生的socket即可<br />
 直接上代码<br />
 ```js
 const net = require('net');
@@ -54,13 +54,13 @@ function writeLog(port,host,logInfo)
         });
        
     }
-writeLog(514,'127.0.0.1','hello！rsyslog!')；
+writeLog(514,'127.0.0.1','hello！rsyslog!')；
 ```
-这时我们如何查看信息呢？很简单，默认是在／var/log/message文件中<br />
+这时我们如何查看信息呢？很简单，默认是在／var/log/message文件中<br />
 ```
 tail -f ／var/log/message
 ```
-我们应该可以在末端看到“hello！rsyslog!”<br />
+我们应该可以在末端看到“hello！rsyslog!”<br />
 但所有文件都在message，我存其他地方行不行？<br />
 这就要涉及rsyslog规则了<br />
 
@@ -98,7 +98,7 @@ local7.*                                                /var/log/boot.log
 ```
 为什么我们会访问/var/log/messages，这里很明显，<br />
 所有info数据类型都会进入/var/log/messages文件中<br />
-这里就要说明Facility(设备)和Severity（日志等级）了<br />
+这里就要说明Facility(设备)和Severity（日志等级）了<br />
 比如我在/etc/rsyslog.conf增加以下代码<br />
 ```ini
 local1.info   /var/log/local1.info.log #别忘了增加配置要重启服务哦
@@ -164,7 +164,7 @@ tail -f /var/log/local1.info.log
 Jul 26 21:02:30 127.0.0.1 hello！local1.info!
 ```
 
-## 简单的rsyslog教程结束
+## 简单的rsyslog教程结束
 如果想看rsyslog结合kafka和hbase的教程，<br />
 请点星 https://github.com/zy445566/myBlog  <br />
 超过100我将进行写rsyslog结合kafka和hbase的教程   <br />
