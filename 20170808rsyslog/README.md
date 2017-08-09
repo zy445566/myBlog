@@ -137,9 +137,9 @@ Severity:日志等级
 7 Debug
 ```
 ### 问题又来了，我们应该如何写入进local1.info的local1.info.log文件中呢？
-这里就涉及到syslog的日志协议了，如图
+这里就涉及到syslog的日志协议了，如图<br />
 ![syslog-stant](https://raw.githubusercontent.com/zy445566/myBlog/master/20170808rsyslog/imgs/syslog-stant.png)
-比如我们要发送到local1.info中
+<br />比如我们要发送到local1.info中<br />
 ```js
 writeLog(514,'127.0.0.1','<142>Jul 26 21:02:30 127.0.0.1 hello！local1.info!')；
 ```
