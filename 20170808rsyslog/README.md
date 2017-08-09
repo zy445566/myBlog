@@ -166,7 +166,8 @@ Jul 26 21:02:30 127.0.0.1 hello！local1.info!
 ### 当然规则也有高级用法比如按应用名创建
 ```ini
 $template myFormat,"/var/log/%programname%/%$year%%$month%%$day%.log"
-*.* -?myFormat
+*.* -?myFormat #本机测试使用
+#fromhost-ip, !isequal, "127.0.0.1" ?myFormat #实际线上格式
 #这里会创建myApp目录并根据年月日生成日志
 ```
 可使用变量如下
