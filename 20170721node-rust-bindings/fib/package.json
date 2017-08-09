@@ -1,0 +1,14 @@
+{
+  "name": "fib",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/index.js",
+  "author": "ZY <zyct@vip.qq.com>",
+  "license": "MIT",
+  "dependencies": {
+    "neon-cli": "^0.1.18"
+  },
+  "scripts": {
+    "install": "neon build"
+  }
+}
