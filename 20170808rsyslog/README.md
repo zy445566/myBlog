@@ -166,6 +166,6 @@ Jul 26 21:02:30 127.0.0.1 hello！local1.info!
 
 ## 简单的rsyslog教程结束
 如果想看rsyslog结合kafka和hbase的教程，<br />
-请点星 https://github.com/zy445566/myBlog  <br />
+请点星 https://github.com/zy445566/myBlog/tree/master/20170808rsyslog  <br />
 超过100我将进行写rsyslog结合kafka和hbase的教程   <br />
 

@@ -1,5 +1,5 @@
 # rust-bindings-learn
-* 于[github首发](https://github.com/zy445566/myBlog),如需转载，请先联系作者。
+* 于[github首发](https://github.com/zy445566/myBlog/tree/master/20170721node-rust-bindings),如需转载，请先联系作者。
 * 这是一个用于制作node的rust扩展的的中文教程，接下来我将会一步一步教学。
 * 由于天朝墙的问题，建议大家先准备好代理。
 
