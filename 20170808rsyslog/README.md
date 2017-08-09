@@ -141,7 +141,7 @@ Severity:日志等级
 ![syslog-stant](https://raw.githubusercontent.com/zy445566/myBlog/master/20170808rsyslog/imgs/syslog-stant.png)
 <br />比如我们要发送到local1.info中<br />
 ```js
-writeLog(514,'127.0.0.1','<142>Jul 26 21:02:30 127.0.0.1 hello！local1.info!')；
+writeLog(514,'127.0.0.1','<142>Jul 26 21:02:30 127.0.0.1 myApp[0]: hello！local1.info!')；
 ```
 ### 那我们来拆解着一段
 #### PRI：
@@ -162,6 +162,20 @@ tail -f /var/log/local1.info.log
 这时你应该会看到以下信息在/var/log/local1.info.log文件中
 ```log
 Jul 26 21:02:30 127.0.0.1 hello！local1.info!
+```
+### 当然规则也有高级用法比如按应用名创建
+```ini
+$template myFormat,"/var/log/%programname%/%$year%%$month%%$day%.log"
+*.* -?myFormat
+#这里会创建myApp目录并根据年月日生成日志
+```
+可使用变量如下
+```
+msg,rawmsg,hostname,source,fromhost,fromhost-ip,syslogtag,programname,pri-text,iut,syslogfacility,syslogfacility-text,syslogseverity,syslogseverity-text,syslogpriority,syslogpriority-text,timegenerated,timereported,timestamp,protocol-version,structured-data,app-name,procid,msgid,inputname
+```
+系统常量
+```
+$bom,$now,$year,$month,$day,$hour,$hhour,$qhour,$minute,$myhostname
 ```
 
 ## 简单的rsyslog教程结束
