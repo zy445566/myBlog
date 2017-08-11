@@ -37,6 +37,7 @@ sudo service rsyslog restart
 其实这一步很简单，根据上面开启的服务，直接使用原生的socket即可<br />
 直接上代码<br />
 ```js
+//tcp版本
 const net = require('net');
 function writeLog(port,host,logInfo)
     {
@@ -55,6 +56,23 @@ function writeLog(port,host,logInfo)
        
     }
 writeLog(514,'127.0.0.1','hello！rsyslog!')；
+```
+```js
+//udp版本
+const dgram = require('dgram');
+function writeLog(port,host,logInfo)
+    {
+        var client = dgram.createSocket('udp4');
+        return new Promise((resolve,reject)=>{
+            var message = Buffer.from(logInfo);
+            client.send(message, port, host, (err) => {
+                if(err)reject(err);
+                resolve(true);
+                client.close();
+            });
+        });
+       
+    }
 ```
 这时我们如何查看信息呢？很简单，默认是在／var/log/message文件中<br />
 ```
