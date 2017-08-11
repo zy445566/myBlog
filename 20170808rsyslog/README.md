@@ -35,7 +35,7 @@ sudo service rsyslog restart
 
 ## 如何使用我们的node进行连接来写入日志
 其实这一步很简单，根据上面开启的服务，直接使用原生的socket即可<br />
-直接上代码<br />
+直接上代码（下面两种版本选一种即可，udp快，但不能保证传输必达性）<br />
 ```js
 //tcp版本
 const net = require('net');
