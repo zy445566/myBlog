@@ -75,7 +75,7 @@ http.createServer(function(req, res){
 由于函数计算会在访问量大的时候进行动态伸缩（其实就是加实例和机器，但只对需要的函数伸缩不像Paas要对整个平台伸缩造成浪费）所以在CPU密集时，它会为了保持及时的响应速度，进行进行伸缩，不至于CPU密集会导致无法访问或访问过慢。
 
 # 最后
-如果使用此某云实现的Serverless，那么建议使用开发工具，因为能更快用自己的IDE进行编码和开发，本人使用web页面，纯粹是为了更好展现功能。原文地址：https://github.com/zy445566/myBlog/tree/master/20171214serverless
+如果使用此某云实现的Serverless，那么建议使用该云推出开发工具，因为能更快用自己的IDE进行编码和开发，本人使用web页面，纯粹是为了更好展现功能。原文地址：https://github.com/zy445566/myBlog/tree/master/20171214serverless
 
 
 
