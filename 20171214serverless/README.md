@@ -66,7 +66,7 @@ http.createServer(function(req, res){
 }).listen(3000);
 ```
 ## 压测结果
-某云函数计算压测结果：<br />
+某云函数计算压测结果(我认为出现由于并发超时丢包是正确的)：<br />
 ![test1](https://raw.githubusercontent.com/zy445566/myBlog/master/20171214serverless/pic/test1.png) <br />
 本机压测结果（已被CPU密集计算阻塞）：<br />
 ![test2](https://raw.githubusercontent.com/zy445566/myBlog/master/20171214serverless/pic/test2.png) <br />
