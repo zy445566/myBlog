@@ -38,7 +38,7 @@ typePointer.freeValueByAddr(addr);//但由于对象一直处于占用内存的�
 ### 其二
 关于V8的内存回收，其实V8的内存管理在C中，
 是使用Handle（句柄）和 HandleScope（句柄域，自己理解有点像js的作用域的意思，但本质是一个栈）来管理Heap的数据<br/>
-也就是说V8他自己实现了一套内存管理在heap中，没用直接使用malloc和free，所以这应该就是--max-new-spaace-size和--max-old-spaace-size的根本原因吧（猜测，请大神指正）<br/>
+也就是说V8他自己实现了一套内存管理在heap中，没用直接使用malloc和free，所以这应该就是--max-new-spaace-size和--max-old-spaace-size的根本原因吧（猜测，请大神指正）<br/>
 而由于heap经常要进行from内存到to内存的变换，所以每个数据的指针具有不确定性，所以需要通过Handle来访问。而Handle是什么东西呢？就类似于Heap的指针。<br/>
 大家应该知道其实函数的调用都是存在栈里面的，同理Handle也是存在栈里面的，当然也有不是在栈里面的，这个栈在v8里面叫HandleScope，所以Handle一旦出栈，那么Handle指向的Heap数据，在下一次CG里面就可以被回收。<br/>
 而Handle又有多种类型如Local和Persistent两种，Local是存在栈里面的，在调用出了HandleScope就会被释放调，而Persistent则可以逃出释放的厄运,但容易内存泄漏。
