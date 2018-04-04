@@ -8,19 +8,26 @@ npm install type-pointer
 ```js
 const TypePointer = require('type-pointer');
 
-let typePointer = new TypePointer(); //先把包new一下
-var obj1 = {a:1,b:2,c:()=>{return a+b;}}; //定义一个值，你可以用任意的值包括数字等等
+ //先把包new一下
+let typePointer = new TypePointer();
+ //定义一个值，你可以用任意的值包括数字等等
+var obj1 = {a:1,b:2,c:()=>{return a+b;}};
 
-var addr = typePointer.mallocValueAddr(obj1); //这里可以开辟空间，并把对象放入开辟的空间
+ //这里可以开辟空间，并把对象放入开辟的空间
+var addr = typePointer.mallocValueAddr(obj1);
 console.log(addr); //0x102709430
 
-var obj2 = typePointer.readValueByAddr(addr); //这里可以把该地址的js对象读出来，当然你也可以读该程序段内所有的虚拟地址，但这很危险
+ //这里可以把该地址的js对象读出来，当然你也可以读该程序段内所有的虚拟地址，但这很危险
+var obj2 = typePointer.readValueByAddr(addr);
 
 var obj3 = {d:4};
-typePointer.writeValueByAddr(addr,obj3); //这里可以重新写入对象,同时会释放之前的值在heap中的数据，但开辟的空间会保留
-var obj4 = typePointer.readValueByAddr(addr); //再次读出地址的对象
+ //这里可以重新写入对象,同时会释放之前的值在heap中的数据，但开辟的空间会保留
+typePointer.writeValueByAddr(addr,obj3);
+//再次读出地址的对象
+var obj4 = typePointer.readValueByAddr(addr); 
 
-typePointer.freeValueByAddr(addr);//但由于对象一直处于占用内存的状态下，所以我们可以及时释放，否则会一直保持
+//但由于对象一直处于占用内存的状态下，所以我们可以及时释放，否则会一直保持
+typePointer.freeValueByAddr(addr);
 ```
 关于这个小项目，我想我可以回答一下之前提出的问题了<br />
 [https://cnodejs.org/topic/5ab60ba7320bb09d69e231b1](https://cnodejs.org/topic/5ab60ba7320bb09d69e231b1)<br />
