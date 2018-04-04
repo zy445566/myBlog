@@ -1,5 +1,5 @@
 # nodejs面向指针编程
-### 我们可以用指针读取node数据啦(宏观)
+### 我们可以用指针读取node数据啦
 第一步肯定是
 ```sh
 npm install type-pointer
