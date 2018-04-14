@@ -1,4 +1,5 @@
 const http = require('http');
+const BlockRun = require('block-run');
 const url = require('url');
 const mysql = require('mysql');
 const pool  = mysql.createPool({
@@ -31,44 +32,126 @@ async function sqlClear()
 {
     let conn = await getConn();
     await queryPromise(conn,'TRUNCATE TABLE test');
-    sqlCount = 0;
+    await queryPromise(conn,'INSERT INTO `test`.`test` (`id`,`name`,`version`) VALUES (1,"test:1",1);');
+    sqlCount = 1;
 }
 
-async function sqlCommon()
+function getName(count)
 {
-    let name = `test:${sqlCount}`;
-    let conn = await getConn();
-    let testSelete = await queryPromise(
-        conn,
-        'SELECT * FROM `test` WHERE `name`= ? AND `version`=?',
-        [name,sqlCount]
-    );
-    if(testSelete.length>0)
-    {
-        let testRes = await queryPromise(
+    return `test:${count}`
+}
+
+async function sqlCommon(sqlCommonName = 'sqlCommon')
+{
+    let conn;
+    try{
+        conn = await getConn();
+        let testSelete = await queryPromise(
             conn,
-            'UPDATE `test` SET `name`= ?,`version`=?+1 WHERE `version`=?',
-            [name,sqlCount,sqlCount]
+            'SELECT * FROM `test` WHERE `name`= ? AND `version`=?',
+            [getName(sqlCount),sqlCount]
         );
-        if(testRes.affectedRows>0)
+        if(testSelete.length>0)
         {
-            sqlCount++;
+            let testRes = await queryPromise(
+                conn,
+                'UPDATE `test` SET `name`= ?,`version`=?+1 WHERE `version`=?',
+                [getName(sqlCount+1),sqlCount,sqlCount]
+            );
+            if(testRes.affectedRows>0)
+            {
+                sqlCount++;
+            } else {
+                console.log(`${sqlCommonName} failed:${sqlCount}`)
+            }
+        } else {
+            console.log(`${sqlCommonName} failed:${sqlCount}`)
         }
-    } else {
-        console.log(sqlCount)
+        conn.release();
+    } catch(e){
+        console.log(`${sqlCommonName} failed:${sqlCount}`)
+        conn.release();
+        // console.log(e.stack)
     }
+}
+
+function beginTransaction(conn)
+{
+    return new Promise((res,rej)=>{
+        conn.beginTransaction((err)=>{
+            if(err)rej(err);
+            res(true);
+        })
+    });
+}
+
+function rollback(conn)
+{
+    return new Promise((res,rej)=>{
+        conn.rollback((err)=>{
+            if(err)rej(err);
+            res(true);
+        })
+    });
+}
+
+function commit(conn)
+{
+    return new Promise((res,rej)=>{
+        conn.commit((err)=>{
+            if(err)rej(err);
+            res(true);
+        })
+    });
 }
 
 async function sqlTrans()
 {
-    let conn = await getConn();
-    await queryPromise(conn,'TRUNCATE TABLE test');
+    let conn;
+    try{
+        conn = await getConn();
+        await queryPromise(conn,'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;')
+        beginTransaction(conn);
+        let testSelete = await queryPromise(
+            conn,
+            'SELECT * FROM `test` WHERE `name`= ? AND `version`=?',
+            [getName(sqlCount),sqlCount]
+        );
+        if(testSelete.length>0)
+        {
+            let testRes = await queryPromise(
+                conn,
+                'UPDATE `test` SET `name`= ?,`version`=?+1 WHERE `version`=?',
+                [getName(sqlCount+1),sqlCount,sqlCount]
+            );
+            if(testRes.affectedRows>0)
+            {
+                sqlCount++;
+            } else {
+                console.log(`sqlTrans failed:${sqlCount}`)
+                rollback(conn);
+            }
+        } else {
+            console.log(`sqlTrans failed:${sqlCount}`)
+        }
+        commit(conn);
+        conn.release();
+    } catch(e){
+        console.log(`sqlTrans failed:${sqlCount}`)
+        // console.log(e.stack);//这里会爆出很多事务锁错误
+        rollback(conn);
+        conn.release();
+    }
 }
 
-async function sqlBlock()
+
+function sqlBlock()
 {
-    let conn = await getConn();
-    await queryPromise(conn,'TRUNCATE TABLE test');
+    return new Promise ((reslove,rejected)=>{
+        BlockRun.run('sqlBlockChannel1',async ()=>{
+            await sqlCommon('sqlBlock');
+        },3000);
+    });
 }
 
 http.createServer( async (request, response) => {
@@ -91,7 +174,7 @@ http.createServer( async (request, response) => {
             showText = 'trans';
             break;
         case '/block':
-            await sqlBlock();
+            sqlBlock();
             showText = 'block';
             break;
     }
@@ -108,6 +191,14 @@ http.createServer( async (request, response) => {
  console.log(`ab common command: ab -n ${abN} -c ${abC} http://127.0.0.1:${port}/common`);
  console.log(`ab trans command: ab -n ${abN} -c ${abC} http://127.0.0.1:${port}/trans`);
  console.log(`ab block command: ab -n ${abN} -c ${abC} http://127.0.0.1:${port}/block`);
+
+
+//  setInterval(()=>{
+//     if (BlockRun.getQueue()['sqlBlockChannel1'] != undefined){
+//         console.log(BlockRun.getQueue()['sqlBlockChannel1'].length)
+//     }
+    
+//  },1000)
 
 
   

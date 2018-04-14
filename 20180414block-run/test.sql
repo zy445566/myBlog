@@ -6,5 +6,4 @@ CREATE TABLE  IF NOT EXISTS `test`.`test` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 TRUNCATE TABLE `test`.`test`;
-INSERT INTO `test`.`test` (`id`,`name`,`version`) 
-VALUES (1,"test:1",1);
+INSERT INTO `test`.`test` (`id`,`name`,`version`) VALUES (1,"test:1",1);
