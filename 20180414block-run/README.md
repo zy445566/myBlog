@@ -180,7 +180,7 @@ http.createServer( async (request, response) => {
 #### 块执行加乐观锁抗并发(并发升级版本)
 ##### ab 直接上 -n 10000 -c 100
 ![optimisticBlockSuper-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-ab.png)
-##### failed (怎么还没修改失败？神奇？)
+##### failed (怎么还没更新失败？神奇？)
 ![optimisticBlockSuper-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-failed.png)
 ##### res (看来神奇又是必然的，嘿嘿)
 ![optimisticBlockSuper-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-res.png)
@@ -192,5 +192,5 @@ http.createServer( async (request, response) => {
 2. sql和全部代码都在[此处](https://github.com/zy445566/myBlog/tree/master/20180414block-run)
 3. 测试前要 npm install 
 4. 此次测试使用的块执行库是block-run的1.0.8版本：
-[乐观锁需要的包地址](https://www.npmjs.com/package/block-run)
-[乐观锁需要的仓库地址](https://github.com/zy445566/block-run)
+[块执行包地址](https://www.npmjs.com/package/block-run)
+[块执行仓库地址](https://github.com/zy445566/block-run)
