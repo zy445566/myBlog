@@ -9,14 +9,14 @@
 因为node无法按整个请求的sql块作为执行单元，而是按sql条作为了执行单元，那么按上面的来说两个select会先后到达，而第一条insert并没有插入，导致第二个select查询为空，还会继续插入用户。（如果表小可能不会出现，表大必现）
 而消息队列则相当于是已将请求的整个sql块作为执行单元，即完成了整个请求的select和insert，才会执行下一个请求的select和insert。
 ```
-这个回答是根据我以往在node遇到的坑，来回答的。貌似很有道理，毕竟我们平时执行node都是按条作为异步的最小单元执行的。<br />
+这个回答是根据我以往在node遇到的坑，来回答的。貌似很有道理，毕竟我们平时执行node都是按条作为异步的最小单元执行的。<br />
 但是事后我想，那为什么不能将node块做为顺序执行单位呢？<br />
 ```
 没错，它确实可以
 ```
-遂在当天晚上做了一个简单的块运行库，简单测试了一下，感觉好像是实现了，但由于业务繁忙（产品需求激增），所以一直没有时间去做优化和针对数据库的实际的测试！遂于周末来测试一下。<br />
-我这边实现了三套针对数据库的并发测试<br />
-1. 乐观锁抗并发
+遂在当天晚上做了一个简单的块运行库，简单测试了一下，感觉好像是实现了，但由于业务繁忙（产品需求激增），所以一直没有时间去做优化和针对数据库的实际的测试！遂于周末来测试一下。<br />
+我这边实现了三套针对数据库的并发测试<br />
+1. 乐观锁抗并发
 2. 事务加乐观锁抗并发
 3. 块执行加乐观锁抗并发
 
@@ -150,7 +150,7 @@ http.createServer( async (request, response) => {
 ### 其他代码请看
 [其他代码文件地址](https://github.com/zy445566/myBlog/blob/master/20180414block-run/index.js)
 
-### 运行结果
+### 运行结果
 #### 乐观锁抗并发
 ##### ab
 ![optimisticOnly-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticOnly-ab.png)
@@ -158,7 +158,7 @@ http.createServer( async (request, response) => {
 ![optimisticOnly-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticOnly-failed.png)
 ##### res
 ![optimisticOnly-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticOnly-res.png)
-#### 事务加乐观锁抗并发(和乐观几乎一致，有时事务结果好一个两个)
+#### 事务加乐观锁抗并发(和乐观几乎一致，有时事务结果好一个两个)
 ##### ab
 ![optimisticTrans-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticTrans-ab.png)
 ##### failed
@@ -171,7 +171,7 @@ http.createServer( async (request, response) => {
 ![optimisticBlock-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlock-ab.png)
 ##### failed (一开始看到没有数据失败，感觉还挺神奇的)
 ![optimisticBlock-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlock-failed.png)
-##### res (看来神奇是必然的，嘿嘿)
+##### res (看来神奇是必然的，嘿嘿)
 ![optimisticBlock-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlock-res.png)
 
 到这里有人会说了，你这个ab压力太小了，当然没什么了，其实我想说，主要还是数据和乐观锁结果太难看了，我要照顾一下。<br />
@@ -180,10 +180,10 @@ http.createServer( async (request, response) => {
 #### 块执行加乐观锁抗并发(并发升级版本)
 ##### ab 直接上 -n 10000 -c 100
 ![optimisticBlockSuper-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-ab.png)
-##### failed (怎么还没修改失败？神奇？)
+##### failed (怎么还没修改失败？神奇？)
 ![optimisticBlockSuper-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-failed.png)
-##### res (看来神奇又是必然的，嘿嘿)
+##### res (看来神奇又是必然的，嘿嘿)
 ![optimisticBlockSuper-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-res.png)
 
 ### 最后
-还有谁不服！简直就是并发小神奇啊！如果是个人建站抗并发的话足够了！还不用开事务！感觉发现新大陆！
+还有谁不服！简直就是并发小神奇啊！如果是个人建站抗并发的话足够了！还不用开事务！感觉发现新大陆！
