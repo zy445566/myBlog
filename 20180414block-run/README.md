@@ -1,8 +1,8 @@
 # 针对使用非块运行和非块运行压测对比
-该文使用源码地址：(地址)[https://github.com/zy445566/myBlog/tree/master/20180414block-run]
+该文使用源码地址：[地址](https://github.com/zy445566/myBlog/tree/master/20180414block-run)
 
 ### 为什么会有这个实验
-由于cnode上的一篇提问 (node.js单线程,是不是就不用消息队列了啊?)[https://cnodejs.org/topic/5acc702a042a804dc5196811]<br />
+由于cnode上的一篇提问 [node.js单线程,是不是就不用消息队列了啊?](https://cnodejs.org/topic/5acc702a042a804dc5196811)<br />
 我当时的回答是<br />
 ```
 举个例子，你要在数据表查是否有同名的，没同名则插入。
@@ -98,7 +98,9 @@ async function sqlTrans()
     }
 }
 ```
-#### 块执行加乐观锁抗并发
+#### 块执行加乐观锁抗并发(仅仅是将乐观锁，放如块执行的某个渠道，改造很简单)
+[乐观锁需要的包地址](https://www.npmjs.com/package/block-run)<br />
+[乐观锁需要的仓库地址](https://github.com/zy445566/block-run)<br />
 ```js
 function sqlBlock()
 {
@@ -146,15 +148,42 @@ http.createServer( async (request, response) => {
  }).listen(port);
 ```
 ### 其他代码请看
-(其他代码文件地址)[https://github.com/zy445566/myBlog/blob/master/20180414block-run/index.js]
+[其他代码文件地址](https://github.com/zy445566/myBlog/blob/master/20180414block-run/index.js)
 
 ### 运行结果
 #### 乐观锁抗并发
-Optimistic
-
-
-#### 事务加乐观锁抗并发
+##### ab
+![optimisticOnly-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticOnly-ab.png)
+##### failed
+![optimisticOnly-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticOnly-failed.png)
+##### res
+![optimisticOnly-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticOnly-res.png)
+#### 事务加乐观锁抗并发(和乐观几乎一致，有时事务结果好一个两个)
+##### ab
+![optimisticTrans-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticTrans-ab.png)
+##### failed
+![optimisticTrans-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticTrans-failed.png)
+##### res
+![optimisticTrans-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticTrans-res.png)
 
 #### 块执行加乐观锁抗并发
+##### ab
+![optimisticBlock-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlock-ab.png)
+##### failed (一开始看到没有数据失败，感觉还挺神奇的)
+![optimisticBlock-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlock-failed.png)
+##### res (看来神奇是必然的，嘿嘿)
+![optimisticBlock-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlock-res.png)
 
+到这里有人会说了，你这个ab压力太小了，当然没什么了，其实我想说，主要还是数据和乐观锁结果太难看了，我要照顾一下。<br />
+大家想看块执行的牛逼之处就让大家看个痛快<br />
 
+#### 块执行加乐观锁抗并发(并发升级版本)
+##### ab 直接上 -n 10000 -c 100
+![optimisticBlockSuper-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-ab.png)
+##### failed (怎么还没修改失败？神奇？)
+![optimisticBlockSuper-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-failed.png)
+##### res (看来神奇又是必然的，嘿嘿)
+![optimisticBlockSuper-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-res.png)
+
+### 最后
+还有谁不服！简直就是并发小神奇啊！如果是个人建站抗并发的话足够了！还不用开事务！感觉发现新大陆！
