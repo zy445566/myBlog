@@ -186,7 +186,7 @@ http.createServer( async (request, response) => {
 ![optimisticBlockSuper-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-res.png)
 
 ### 最后
-还有谁不服！简直就是并发小神奇啊！如果是个人建站抗并发的话足够了！无须事务照样抗并发，性能杠杠的！<br />
+还有谁不服！简直就是并发小神器啊！如果是个人建站抗并发的话足够了！无须事务照样抗并发，性能杠杠的！<br />
 对结果有疑问的同学可以自行测试，注意两点：
 1. 测试前要 curl http://127.0.0.1:8088/clear 保证数据库没有被之前测试污染
 2. sql和全部代码都在[此处](https://github.com/zy445566/myBlog/tree/master/20180414block-run)
