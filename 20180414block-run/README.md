@@ -194,3 +194,4 @@ http.createServer( async (request, response) => {
 4. 此次测试使用的块执行库是block-run的1.0.8版本：
 [块执行包地址](https://www.npmjs.com/package/block-run)
 [块执行仓库地址](https://github.com/zy445566/block-run)
+5. 补充一下，如果要涉及数据回滚，最好在块执行中要加上事务，块执行高效的原因其实就在于保证成功率，这里没有测加事务的块执行的版本，我相信加事务的块执行的效率还是会比非块执行的事务版本要高，有兴趣的可以测试一下
