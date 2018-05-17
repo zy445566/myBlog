@@ -122,7 +122,7 @@ module.exports = function(args){
 导致绑定在reg_ary的数据越来越多！
 
 ### 解决
-将ccap(default_cfg.style);放到当前文件上面，我们这个文件是单例，不会不断运行，所以可以这样做，当然其它情况需视情况而定。
+将ccap(default_cfg.style);放到当前文件上面即可。
 ```js
 var ccap = require('ccap');
 var captcha = ccap(default_cfg.style);
