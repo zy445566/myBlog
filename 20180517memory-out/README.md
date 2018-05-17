@@ -25,13 +25,14 @@ for(let i=0;i<500;i++)
 ### 开干
 然后使用node启动入口文件（请勿用pm2启动服务，pm2开的子进程容易造成数据的迷惑）<br />
 启动后，查出node的PID，如图<br />
-![pid](./pid.png) <br />
+![pid](https://raw.githubusercontent.com/zy445566/myBlog/master/20180517memory-out/pid.png) <br />
 接下来每运行一次测试脚本就执行一次下面的命令（2981是我启动node服务的PID）
 ```sh
 kill -USR2 2981
 ```
 生成出内存快照后，进入chrome开发者工具进行对比，使用对比模式(comparision),将两次执行测试脚本后生成的快照进行对比,发现CAP类型的数据回收数量为0，并且新增数量巨大，如下图<br />
-![comparision](./comparision.png) <br />
+![comparision](https://raw.githubusercontent.com/zy445566/myBlog/master/20180517memory-out/comparision.png) <br />
+
 
 ### 并且发现绑定在reg_ary中，遂查找调用链。发现以下可能存在问题的代码(有兴趣可以先看一下)
 
