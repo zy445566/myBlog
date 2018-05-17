@@ -23,19 +23,19 @@ for(let i=0;i<500;i++)
 ```
 
 ### 开干
-然后使用node启动入口文件（请勿用pm2启动服务，pm2开的子进程容易造成数据的迷惑）<br />
+然后使用node启动入口文件（请勿用pm2启动服务，pm2开的子进程容易造成数据的迷惑）<br />
 启动后，查出node的PID，如图<br />
 ![pid](./pid.png) <br />
 接下来每运行一次测试脚本就执行一次下面的命令（2981是我启动node服务的PID）
 ```sh
 kill -USR2 2981
 ```
-生成出内存快照后，进入chrome开发者工具进行对比，使用对比模式(comparision),将两次执行测试脚本后生成的快照进行对比,发现CAP类型的数据回收数量为0，并且新增数量巨大，如下图<br />
+生成出内存快照后，进入chrome开发者工具进行对比，使用对比模式(comparision),将两次执行测试脚本后生成的快照进行对比,发现CAP类型的数据回收数量为0，并且新增数量巨大，如下图<br />
 ![comparision](./comparision.png) <br />
 
-### 并且发现绑定在reg_ary中，遂查找调用链。发现以下可能存在问题的代码(有兴趣可以先看一下)
+### 并且发现绑定在reg_ary中，遂查找调用链。发现以下可能存在问题的代码(有兴趣可以先看一下)
 
-以下是我们业务代码（每一次调用都会走，存在删减）：<br />
+以下是我们业务代码（每一次调用都会走，存在删减）：<br />
 ```js
 _M.prototype.get = function* () {
     try{
@@ -109,7 +109,7 @@ var ccap = require('ccap');
 var captcha = ccap(default_cfg.style);
 ```
 而运行ccap，会把CAP这个方法不断推送到timer.js文件的timer变量的reg_ary数组中！<br />
-重点reg_ary是绑定在require('./timer.js')的，所以不会回收，而一直缓存的！<br />
+重点reg_ary是绑定在require('./timer.js')的，所以不会回收，而一直缓存的！<br />
 ```js
 module.exports = function(args){
 	var cap = CAP(args);
@@ -118,10 +118,10 @@ module.exports = function(args){
 	return cap;
 };
 ```
-导致绑定在reg_ary的数据越来越多！
-
+导致绑定在reg_ary的数据越来越多！
+
 ### 解决
-将ccap(default_cfg.style);放到当前文件上面，我们这个文件是单例，不会不断运行，所以可以这样做，当然其它情况需视情况而定。
+将ccap(default_cfg.style);放到当前文件上面，我们这个文件是单例，不会不断运行，所以可以这样做，当然其它情况需视情况而定。
 ```js
 var ccap = require('ccap');
 var captcha = ccap(default_cfg.style);
@@ -141,4 +141,4 @@ _M.prototype.get = function* () {
 };
 ```
 ### 总结
-虽然这份业务代码不是我也写的，但自认如果自己写，也有可能会遇到这样的坑，所以希望ccap的作者有时间能够改良一下，虽然可能我有时间也会PR，嘿嘿！@DoubleSpout
+虽然这份业务代码不是我也写的，但自认如果自己写，也有可能会遇到这样的坑，所以希望ccap的作者有时间能够改良一下，虽然可能我有时间也会PR，嘿嘿！@DoubleSpout
