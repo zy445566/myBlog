@@ -109,7 +109,7 @@ var ccap = require('ccap');
 var captcha = ccap(default_cfg.style);
 ```
 而运行ccap，会把CAP这个方法不断推送到timer.js文件的timer变量的reg_ary数组中！<br />
-重点reg_ary是绑定在require('./timer.js')的，所以不会回收，而一直缓存的！<br />
+重点reg_ary是绑定在require('./timer.js')的，所以不会回收，而一直缓存的！<br />
 ```js
 module.exports = function(args){
 	var cap = CAP(args);
@@ -118,7 +118,7 @@ module.exports = function(args){
 	return cap;
 };
 ```
-导致绑定在reg_ary的数据越来越多！
+导致绑定在reg_ary的数据越来越多！
 
 ### 解决
 将ccap(default_cfg.style);放到当前文件上面，我们这个文件是单例，不会不断运行，所以可以这样做，当然其它情况需视情况而定。
