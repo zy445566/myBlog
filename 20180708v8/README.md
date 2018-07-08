@@ -11,7 +11,7 @@ sudo apt-get install g++-4.8 -y
 sudo apt-get remove libgnutls26 libgnutlsxx27 libgnutls-openssl27 -y # 如果没有则无需移除
 sudo apt-get install libgnutls-dev -y
 ```
-注意linux只支持以下版本，且不同版本要移除的依赖不一样（当然你有把握能手动安装v8所需要的全部依赖，请忽略该条和下面的提示）：
+注意linux只支持以下版本，且不同版本要移除的依赖不一样（当然你有把握能手动安装v8所需要的全部依赖，请忽略该条和下面的提示）： <br />
 ![build_deps](./build_deps.png)
 
 # 下载谷歌源码管理器和v8源码 <br />
