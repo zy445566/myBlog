@@ -3,7 +3,7 @@
 
 # 准备
 请先准备好命令行的翻墙，我是直接在某云购买的香港服务器用于该次实战。本次教程仅适用于mac和部分linux（本教程使用ubuntu 14.04，并建议使用,安装依赖省事）。同时使用adduser创建账号,同时加入sudoers，请勿使用root账号，gclient不推荐root用户，若想使用则需手动修改depot_tools/update_depot_tools。 <br />
-全新系统需要安装git和依赖，本教程使用ubuntu 14.04（其他版本依赖不一定相同） <br />
+全新系统需要安装git和依赖，本教程使用ubuntu 14.04（其他版本依赖不一定相同，mac则跳过这步，安装xcode即可） <br />
 ```sh
 sudo apt-get update
 sudo apt-get install git -y
