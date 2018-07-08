@@ -2,7 +2,7 @@
 感觉很少人把实战放出，都是理论为主，所以现在准备把一系列的V8实战教程放出。并附上使用V8构造自己的js运行时教程，让每个人都可以参与v8的开发中。但由于工作原因，将不定时更新（预计2到3周更新一次）。
 
 # 准备
-请先准备好命令行的翻墙，我是直接在某云购买的香港服务器用于该次实战。本次教程仅适用于mac和部分linux（本教程使用ubuntu 14.04，并建议使用,安装依赖省事）。同时使用adduser创建账号,同时加入sudoers，请勿使用root账号，gclient不支持root用户。同时安装git和依赖
+请先准备好命令行的翻墙，我是直接在某云购买的香港服务器用于该次实战。本次教程仅适用于mac和部分linux（本教程使用ubuntu 14.04，并建议使用,安装依赖省事）。同时使用adduser创建账号,同时加入sudoers，请勿使用root账号，gclient不推荐root用户，若想使用则需手动修改depot_tools/update_depot_tools。同时安装git和依赖
 ```sh
 sudo apt-get update
 sudo apt-get install git -y
