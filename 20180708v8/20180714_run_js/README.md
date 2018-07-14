@@ -70,7 +70,7 @@ v8::MaybeLocal<v8::String> ReadCommandFile(v8::Isolate* isolate, const char* nam
 void ReportException(v8::Isolate* isolate, v8::TryCatch* handler);
 ```
 ## 入口文件
-因为C语言的入口就是main方法，我们可以仔细看一下main方案，并详细解析<br />
+因为C语言的入口就是main方法，我们可以仔细看一下main方法，并详细解析<br />
 ### 基本概念（这里我就用简单的白话说说）：
 * Isolate:隔离层，你可以理解为nodejs的vm，你创建一个vm就是一个Isolate,里面可以有多个上下文，多个vm可以互相隔离
 * Context：上下文，举个例子，一个方法你除了拿方法内的变量数据，你还可以拿方法外的变量数据，而方法外的数据载体就是上下文，简单的理解就是全局变量的载体。
@@ -128,7 +128,7 @@ int main(int argc, char* argv[]) {
 我这里增加了一个ReadFile的方法到全局变量中，让自己的运行时的js支持读取本地文件<br />
 讲CreateContext前，先讲ReadFile和ReadCommandFile的实现，而CreateContext仅仅是把这个方法绑定到全局而已<br />
 ```c++
-// 是不是很想nodejs的C++扩展的写法
+// 是不是很像nodejs的C++扩展的写法
 void ReadFile(const v8::FunctionCallbackInfo<v8::Value>& args) {
   // 判断参数是不是只有一个
   if (args.Length() != 1) {
@@ -279,13 +279,13 @@ bool ExecuteString(v8::Isolate* isolate, v8::Local<v8::String> source,
 OK！代码讲解完了，就走编译步骤了！
 
 # 编译
-因为我们很早就进行了配置BUILD.gn，所以这次我们直接编译就好<br />
+因为我们开篇就进行了配置BUILD.gn，所以这次我们直接编译就好<br />
 这次编译步骤基本和我上篇文章讲的走<br />
 ```
 cd v8
 ninja -C out.gn/x64.release
 ```
-![ninja_zy_node.png](./ninja_zy_node.png)
+![ninja_zy_node.png](./ninja_zy_node.png) <br />
 不得不说gn的增量编译真的爽，之前编译过的不需要二次编译了。再也不想回到过去的gyp时代了。<br />
 
 # 运行
@@ -301,7 +301,7 @@ console.log("test.js:");
 console.log(readfile("test.js"));
 ```
 看看运行结果:<br />
-![run](./run.png)
+![run](./run.png) <br />
 完美！！！
 
 # 总结
