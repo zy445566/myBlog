@@ -9,7 +9,7 @@ mkdir -p /home/zy445566/v8/zy_node_src
 # 创建一个用于写代码的路径
 touch /home/zy445566/v8/zy_node_src/zy_node.cc 
 ```
-但我们要如何在ninja是如何关联编译的呢？因为最新版本的v8默认是是基于gn构建的，所以我们只要修改v8源码目录的BUILD.gn来配置编译关联就行了，编辑v8目录的BUILD.gn并再末尾加上以下代码就好，说明请看注释。OK，那么我们来配置gn吧。<br />
+但我们要如何在ninja是如何关联编译的呢？因为最新版本的v8默认是是基于gn构建的，所以我们只要修改v8源码目录的BUILD.gn来配置编译关联就行了，编辑v8目录的BUILD.gn并在末尾加上以下代码就好，说明请看注释。OK，那么我们来配置gn吧。<br />
 ```conf
 # 这行表示我们要输出的文件名
 v8_executable("zy_node") {
@@ -75,7 +75,7 @@ void ReportException(v8::Isolate* isolate, v8::TryCatch* handler);
 * Isolate:隔离层，你可以理解为nodejs的vm，你创建一个vm就是一个Isolate,里面可以有多个上下文，多个vm可以互相隔离
 * Context：上下文，举个例子，一个方法你除了拿方法内的变量数据，你还可以拿方法外的变量数据，而方法外的数据载体就是上下文，简单的理解就是全局变量的载体。
 * Handle: 可以理解为js的对象的变量名，但本质是一个对象数据的指针
-* HandleScope: 是一个用于装Handle的杯子，而实际是一个盏，如果Handle出了这个最终的HandleScope，意味这个这个数据要从Heap树中移除，等待回收（Scope可以类比到上下文和隔离层）
+* HandleScope: 是一个用于装Handle的杯子，而实际是一个栈，如果Handle出了这个最终的HandleScope，意味这个这个数据要从Heap树中移除，等待回收（Scope可以类比到上下文和隔离层）
 * 
 ```c++
 int main(int argc, char* argv[]) {
