@@ -25,7 +25,6 @@ int main(int argc, char* argv[]) {
   std::unique_ptr<v8::Platform> platform = v8::platform::NewDefaultPlatform();
   v8::V8::InitializePlatform(platform.get());
   v8::V8::Initialize();
-  v8::V8::SetFlagsFromCommandLine(&argc, argv, true);
   v8::Isolate::CreateParams create_params;
   create_params.array_buffer_allocator =
       v8::ArrayBuffer::Allocator::NewDefaultAllocator();
@@ -90,7 +89,6 @@ void ReadFile(const v8::FunctionCallbackInfo<v8::Value>& args) {
   args.GetReturnValue().Set(source);
 }
 
-// Reads a file into a v8 string.
 v8::MaybeLocal<v8::String> ReadCommandFile(v8::Isolate* isolate, const char* name) {
   FILE* file = fopen(name, "rb");
   if (file == NULL) return v8::MaybeLocal<v8::String>();
@@ -132,7 +130,6 @@ int RunMain(v8::Isolate* isolate, v8::Platform* platform, int argc,
     return 0;
 }
 
-// Executes a string within the current v8 context.
 bool ExecuteString(v8::Isolate* isolate, v8::Local<v8::String> source,
                    v8::Local<v8::Value> name, bool print_result,
                    bool report_exceptions) {
