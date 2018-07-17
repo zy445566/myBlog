@@ -8,7 +8,8 @@
 sudo apt-get update
 sudo apt-get install git -y
 sudo apt-get install g++-4.8 -y
-sudo apt-get remove libgnutls26 libgnutlsxx27 libgnutls-openssl27 -y # 如果没有则无需移除
+# 如果没有则无需移除以下依赖
+sudo apt-get remove libgnutls26 libgnutlsxx27 libgnutls-openssl27 -y 
 sudo apt-get install libgnutls-dev -y
 ```
 注意linux只支持以下版本，且不同版本要移除的依赖不一样（当然你有把握能手动安装v8所需要的全部依赖，请忽略该条和下面的提示）： <br />
@@ -18,17 +19,24 @@ sudo apt-get install libgnutls-dev -y
 1. 首先使用git克隆depot_tools仓库,进入目录后，并将该目录加入到环境变量中。如我是直接在zy445566的用户目录目录操作的，目前我depot_tool目录就是/home/zy445566/depot_tools，所以我将/home/zy445566/depot_tools设置到我的全局目录中。<br />
 ```sh
 git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-export PATH=$PATH:/home/zy445566/depot_tools # 建议把这个放入~/.bashrc，以便下次开机不会丢失
+# 建议把这个放入~/.bashrc，以便下次开机不会丢失
+export PATH=$PATH:/home/zy445566/depot_tools 
 ```
 2. 接下来获取v8源码，并开始编译<br />
 注意:获取v8的源码，请不要用git直接clone，由于仓库过大，很容易失败，使用depot_tools的fetch工具来拉取，才是官方推荐的做法。<br />
 ```sh
-fetch v8 # 获取v8源码。漫长的等待。。。
+# 获取v8源码。漫长的等待。。。
+fetch v8
 cd v8 
-gclient sync # 同步最新代码
-sudo ./build/install-build-deps.sh # 这里如果依赖没有问题（主要是版本过高的问题），就能直接安装顺利。注意这里需要sudo，因为它本身会安装一些库,如果是mac和win请忽略该步骤
-tools/dev/v8gen.py x64.release # 生成构建配置
-ninja -C out.gn/x64.release # 正式构建,使用ninja来实现增量编译，即是你修改一部分代码，只会编译你修改的部分
+# 同步最新代码
+gclient sync
+# 这里如果依赖没有问题（主要是版本过高的问题），就能直接安装顺利。
+# 注意这里需要sudo，因为它本身会安装一些库,如果是mac和win请忽略该步骤
+sudo ./build/install-build-deps.sh 
+# 生成构建配置
+tools/dev/v8gen.py x64.release 
+# 正式构建,使用ninja来实现增量编译，即是你修改一部分代码，只会编译你修改的部分
+ninja -C out.gn/x64.release 
 ```
 注意
 3. 验证是否编译成功，我改写了v8/sample的hello_world的例子，未修改则为“hello world！”。 <br />
