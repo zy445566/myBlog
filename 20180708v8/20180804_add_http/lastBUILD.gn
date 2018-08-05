@@ -1,0 +1,19 @@
+v8_executable("zy_node") {
+  sources = [
+    "zy_node_src/zy_node.cc",
+    "zy_node_src/http.h",
+    "zy_node_src/http.cc",
+    "src/d8-console.cc",
+    "src/d8-console.h",
+  ]
+  configs = [
+    ":internal_config_base",
+  ]
+
+  deps = [
+    ":v8",
+    ":v8_libbase",
+    ":v8_libplatform",
+    "//build/win:default_exe_manifest",
+  ]
+}
