@@ -77,41 +77,40 @@ size_t get_line(intptr_t sock, char *buf, size_t size)
 }
 
 const char* HttpToCString(const v8::String::Utf8Value& value) {
-  return *value ? *value : "<string conversion failed>";
+    return *value ? *value : "<string conversion failed>";
+}
+
+void sendWithRN(int client_num,const char* data)
+{
+    char cstr_rn[strlen(data)+2];
+    strcpy(cstr_rn, data);
+    strcat(cstr_rn,"\r\n");
+    send(client_num, cstr_rn, strlen(cstr_rn), 0);
 }
 
 void hellohttp(intptr_t client,
 const v8::FunctionCallbackInfo<v8::Value>& args,
 v8::Local<v8::Object> resp)
 {
-    v8::Local<v8::String> body = resp->Get(v8::String::NewFromUtf8(args.GetIsolate(), "body", v8::NewStringType::kNormal)
-            .ToLocalChecked())->ToString();
-    v8::String::Utf8Value body_utf(args.GetIsolate(), body);
-    const char* body_cstr =  HttpToCString(body_utf);
+    
     int client_num = (int)client;
     char buf[1024];
-    sprintf(buf, "HTTP/1.0 200 OK\r\n");
-    send(client_num, buf, strlen(buf), 0);
+    v8::Local<v8::String> status = resp->Get(v8::String::NewFromUtf8(args.GetIsolate(), "status", v8::NewStringType::kNormal)
+            .ToLocalChecked())->ToString();
+    v8::String::Utf8Value status_utf(args.GetIsolate(), status);
+    const char* status_cstr =  HttpToCString(status_utf);
+    sendWithRN(client_num, status_cstr);
     sprintf(buf, SERVER_STRING);
     send(client_num, buf, strlen(buf), 0);
     sprintf(buf, "Content-Type: text/html\r\n");
     send(client_num, buf, strlen(buf), 0);
     sprintf(buf, "\r\n");
     send(client_num, buf, strlen(buf), 0);
-    // sprintf(buf, body_cstr);
-    send(client_num, body_cstr, strlen(body_cstr), 0);
-    // sprintf(buf, "<HTML><HEAD>\r\n");
-    // send(client_num, buf, strlen(buf), 0);
-    // sprintf(buf, "<TITLE>this is zy'http server</TITLE>\r\n");
-    // send(client_num, buf, strlen(buf), 0);
-    // sprintf(buf, "</HEAD>\r\n");
-    // send(client_num, buf, strlen(buf), 0);
-    // sprintf(buf, "<BODY>\r\n");
-    // send(client_num, buf, strlen(buf), 0);
-    // sprintf(buf, "<P>welcome to zy'http server.</P>\r\n");
-    // send(client_num, buf, strlen(buf), 0);
-    // sprintf(buf, "</BODY></HTML>\r\n");
-    // send(client_num, buf, strlen(buf), 0);
+    v8::Local<v8::String> body = resp->Get(v8::String::NewFromUtf8(args.GetIsolate(), "body", v8::NewStringType::kNormal)
+            .ToLocalChecked())->ToString();
+    v8::String::Utf8Value body_utf(args.GetIsolate(), body);
+    const char* body_cstr =  HttpToCString(body_utf);
+    sendWithRN(client_num, body_cstr);
 }
 
 void accept_request(void *arg,
@@ -127,7 +126,12 @@ v8::Local<v8::Object> resp
     size_t i, j;
 
     numchars = get_line(client, buf, sizeof(buf));
-    // printf("buf1%s",buf);
+    req->Set(
+        v8::String::NewFromUtf8(args.GetIsolate(), "status", v8::NewStringType::kNormal)
+            .ToLocalChecked(),
+        v8::String::NewFromUtf8(args.GetIsolate(), buf, v8::NewStringType::kNormal)
+            .ToLocalChecked()
+    );
     i = 0; j = 0;
     //ISspace是ctype库用于检查是否有空白字符
     while (!ISspace(buf[i]) && (i < sizeof(method) - 1))
@@ -171,11 +175,17 @@ v8::Local<v8::Object> resp
         v8::String::NewFromUtf8(args.GetIsolate(), "headers", v8::NewStringType::kNormal)
             .ToLocalChecked(),headers
     );
-    const char default_body[1024]="<HTML><HEAD><TITLE>zynode_http</TITLE></HEAD><BODY><P>welcome to zynode http server.</P></BODY></HTML>\r\n";
+    const char default_body[1024]="<HTML><HEAD><TITLE>zynode_http</TITLE></HEAD><BODY><P>welcome to zynode http server.</P></BODY></HTML>";
     resp->Set(
         v8::String::NewFromUtf8(args.GetIsolate(), "body", v8::NewStringType::kNormal)
             .ToLocalChecked(),
         v8::String::NewFromUtf8(args.GetIsolate(), default_body, v8::NewStringType::kNormal)
+            .ToLocalChecked()
+    );
+    resp->Set(
+        v8::String::NewFromUtf8(args.GetIsolate(), "status", v8::NewStringType::kNormal)
+            .ToLocalChecked(),
+        v8::String::NewFromUtf8(args.GetIsolate(), "HTTP/1.0 200 OK", v8::NewStringType::kNormal)
             .ToLocalChecked()
     );
     now_cb->Call(args.GetIsolate()->GetCurrentContext()->Global(), argc, argv);
