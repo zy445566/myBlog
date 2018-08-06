@@ -1,14 +1,14 @@
 # 给自己的JS引擎插上HTTP的翅膀
 这篇文章接着上篇文章《[利用v8引擎实现运行js文件](https://github.com/zy445566/myBlog/tree/master/20180708v8/20180714_run_js)》,根据上篇文章，相信同学们已经可以实现使用V8引擎运行JS文件，并有了不少的收获。这次我们直接给V8引擎插上Http的翅膀，让我们的V8引擎支持Http服务！<br />
 
-    这次的Http服务实现，参考了J. David Blackstone在1999年写的tinyhttp,有兴趣用C裸写一个http协议的同学可以看一下，地址：https://sourceforge.net/projects/tinyhttpd/。
+    这次的Http服务实现，参考了J. David Blackstone在1999年写的tinyhttp,有兴趣用C裸写一个http协议的同学可以看一下，地址：https://sourceforge.net/projects/tinyhttpd/。
 
-题外话，这可能会是我近期最后一次更贴，因为要 7，11，6 来赶公司的项目进度了。废话不多说，直接开干！友情提示：看这篇文章的话最好手动操作一次之前的文章，否则这篇文章对你帮助意义不会太大，大佬请忽略这句。<br />
+题外话，这可能会是我近期最后一次更贴，因为要 7，11，6 来赶公司的项目进度了。废话不多说，直接开干！友情提示：看这篇文章的话最好手动操作一次之前的文章，否则这篇文章对你帮助意义不会太大，大佬请忽略这句。<br />
     
     注意：本篇文章依旧基于上篇文章进行讲解
 
 # 准备 && 配置
-上篇文章，我们讲了如何配置gn和BUILD.gn和意义，这次不多说，这次我们要加两个配置在原配置上如下：
+上篇文章，我们讲了如何配置gn和BUILD.gn和意义，这次不多说，这次我们要加两个配置在原配置上如下：
 ### 把文件先建好
 ```sh
 touch /home/zy445566/v8/zy_node_src/http.h
@@ -19,9 +19,9 @@ touch /home/zy445566/v8/zy_node_src/http.cc
 v8_executable("zy_node") {
   sources = [
     "zy_node_src/zy_node.cc",
-    # 增加引入之前写的http的头文件
+    # 增加引入之前写的http的头文件
     "zy_node_src/http.h",
-    # 增加引入之前写的http的代码文件
+    # 增加引入之前写的http的代码文件
     "zy_node_src/http.cc",
     "src/d8-console.cc",
     "src/d8-console.h",
@@ -40,7 +40,7 @@ v8_executable("zy_node") {
 ```
 
 # 代码编写和解析
-涉及的三个源码文件的地址：[http.h](https://github.com/zy445566/myBlog/blob/master/20180708v8/20180714_run_js/http.h)，[http.cc](https://github.com/zy445566/myBlog/blob/master/20180708v8/20180714_run_js/http.cc)，[zy_node.cc](https://github.com/zy445566/myBlog/blob/master/20180708v8/20180714_run_js/zy_node.cc) 。
+涉及的三个源码文件的地址：[http.h](https://github.com/zy445566/myBlog/blob/master/20180708v8/20180714_run_js/http.h)，[http.cc](https://github.com/zy445566/myBlog/blob/master/20180708v8/20180714_run_js/http.cc)，[zy_node.cc](https://github.com/zy445566/myBlog/blob/master/20180708v8/20180714_run_js/zy_node.cc) 。
 
 ### 我们的目标
 实现以下js调用http服务
@@ -69,10 +69,10 @@ void Http(const v8::FunctionCallbackInfo<v8::Value>& args);
 ```
 
 ### http.cc
-这里主要讲围绕v8的http实现，tinyhttp部分请自行查看详解，边看代码边解析,这里抽关于v8实现http服务的方法进行解析。其实也不是很多，大约200行左右。
+这里主要讲围绕v8的http实现，tinyhttp部分请自行查看详解，边看代码边解析,这里抽关于v8实现http服务的方法进行解析。其实也不是很多，大约200行左右。
 ```cc
-// 这里定义了全局的持久函数，持久性对象一般都是手动回收
-// 为什么会用这个请往下看
+// 这里定义了全局的持久函数，持久性对象一般都是手动回收
+// 为什么会用这个请往下看
 v8::Persistent<v8::Function> g_cb;
 
 // 这是用了把v8类型的字符串转成char类型的方法
@@ -100,7 +100,7 @@ void respSetHeaders(
     v8::Local<v8::Array> resp_headers_keys= resp_headers->GetPropertyNames();
     // 把数组长度取出
     uint32_t len = resp_headers_keys->Length();
-    // 遍历response头的Object对象，并用socket发送http数据
+    // 遍历response头的Object对象，并用socket发送http数据
     for(uint32_t i = 0; i < len; i++){
         char buf[1024];
         v8::Local<v8::String> header = resp_headers_keys->Get(i)->ToString();
@@ -122,20 +122,20 @@ v8::Local<v8::Object> resp)
     // socket的句柄ID转换
     int client_num = (int)client;
     char buf[1024];
-    // 设置发送http返回状态
+    // 设置发送http返回状态
     v8::Local<v8::String> status = resp->Get(v8::String::NewFromUtf8(args.GetIsolate(), "status", v8::NewStringType::kNormal)
             .ToLocalChecked())->ToString();
     v8::String::Utf8Value status_utf(args.GetIsolate(), status);
     const char* status_cstr =  HttpToCString(status_utf);
     sendWithRN(client_num, status_cstr);
-    // 设置发送http的返回头信息
+    // 设置发送http的返回头信息
     v8::Local<v8::Object> resp_headers = resp->Get(v8::String::NewFromUtf8(args.GetIsolate(), "headers", v8::NewStringType::kNormal)
             .ToLocalChecked())->ToObject();
     respSetHeaders(client_num,args,resp_headers);
     // 设置发送结束头设置
     sprintf(buf, "\r\n");
     send(client_num, buf, strlen(buf), 0);
-    // 设置发送http的返回html数据
+    // 设置发送http的返回html数据
     v8::Local<v8::String> body = resp->Get(v8::String::NewFromUtf8(args.GetIsolate(), "body", v8::NewStringType::kNormal)
             .ToLocalChecked())->ToString();
     v8::String::Utf8Value body_utf(args.GetIsolate(), body);
@@ -143,7 +143,7 @@ v8::Local<v8::Object> resp)
     sendWithRN(client_num, body_cstr);
 }
 
-// 用于接收http请求数据
+// 用于接收http请求数据
 void accept_request(void *arg,
 const v8::FunctionCallbackInfo<v8::Value>& args,
 v8::Local<v8::Object> req,
@@ -239,11 +239,11 @@ v8::Local<v8::Object> resp
         req,
         resp
     };
-    // 在这里now_cb就是根据v8的持久性数据转换而来的
+    // 在这里now_cb就是根据v8的持久性数据转换而来的
     v8::Local<v8::Function> now_cb = v8::Local<v8::Function>::New(args.GetIsolate(),g_cb);
-    // 进行JS回调
+    // 进行JS回调
     now_cb->Call(args.GetIsolate()->GetCurrentContext()->Global(), argc, argv);
-    // 使用socket发送http数据到客户端
+    // 使用socket发送http数据到客户端
     hellohttp(client,args,resp);
     //关闭这次链接
     close((int)client);
@@ -272,11 +272,11 @@ void ListenPort(const v8::FunctionCallbackInfo<v8::Value>& args) {
     struct sockaddr_in client_name;
     socklen_t  client_name_len = sizeof(client_name);
     
-    // 绑定端口开启socket服务
+    // 绑定端口开启socket服务
     server_sock = startup(&port);
     // 监听请求
     while(1){
-        // 这个方法用于接收请求，收到请求后会继续执行
+        // 这个方法用于接收请求，收到请求后会继续执行
         client_sock = accept(server_sock,
                     (struct sockaddr *)&client_name,
                     &client_name_len);
@@ -309,15 +309,15 @@ void Http(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::Persistent<v8::Function> cb(args.GetIsolate(),args[0].As<v8::Function>());
     // 这个很精髓，因为V8的持久化对象不能copy，所以进行内存复制
     memcpy(&g_cb,&cb,sizeof(v8::Persistent<v8::Function>));
-    // 原本是直接接收，没有使用持久化，结果方法结束就被回收了，这就是是使用持久化的原因
+    // 原本是直接接收，没有使用持久化，结果方法结束就被回收了，这就是是使用持久化的原因
     //   cb = args[0].As<v8::Function>();
-    // 生成对象，并把Listen包装进去
+    // 生成对象，并把Listen包装进去
     v8::Local<v8::Object> http_object = v8::Object::New(args.GetIsolate());
     http_object->Set(
         v8::String::NewFromUtf8(args.GetIsolate(), "listen", v8::NewStringType::kNormal)
             .ToLocalChecked(),
         v8::FunctionTemplate::New(args.GetIsolate(), ListenPort)->GetFunction());
-    // 返回之前生成的对象
+    // 返回之前生成的对象
     args.GetReturnValue().Set(http_object);
   }
 
@@ -329,14 +329,14 @@ void Http(const v8::FunctionCallbackInfo<v8::Value>& args) {
 ninja -C out.gn/x64.release
 ```
 
-# 运行
+# 运行
 直接上图：
 ![http_cmd.png](./img/http_cmd.png) <br />
 ![http_res.png](./img/http_res.png) <br />
 
 # 总结
-一开始有同学跟我反应说有点难，我说你实际操作过没有，他说没有。隔了几天，他说“他操作过一遍，收获很大，很感激”，所以有些话感觉还是要说一下。<br />
-“苦难主义都是纸老虎”，所以如果真想动手深入并不是什么难事，我一开始也觉得实现http协议很难，但实现起来，http并没有我想象的难，甚至可以说是简单的。我这系列基于V8实现自己的JS引擎的文章都是尽可能简单，当然不排除看起来有些迷糊，但仔细看，实际操作一遍，其实不会太难。畏惧是魔鬼，勇敢迈出第一步吧！<br />
+一开始有同学跟我反应说有点难，我说你实际操作过没有，他说没有。隔了几天，他说“他操作过一遍，收获很大，很感激”，所以有些话感觉还是要说一下。<br />
+“苦难主义都是纸老虎”，所以如果真想动手深入并不是什么难事，我一开始也觉得实现http协议很难，但实现起来，http并没有我想象的难，甚至可以说是简单的。我这系列基于V8实现自己的JS引擎的文章都是尽可能简单，当然不排除看起来有些迷糊，但仔细看，实际操作一遍，其实不会太难。畏惧是魔鬼，勇敢迈出第一步吧！<br />
 
 
 
