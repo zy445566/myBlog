@@ -184,12 +184,6 @@ v8::Local<v8::Object> resp
             
         }
     }
-    const unsigned argc = 2;
-    v8::Local<v8::Value> argv[argc] = { 
-        req,
-        resp
-    };
-    v8::Local<v8::Function> now_cb = v8::Local<v8::Function>::New(args.GetIsolate(),g_cb);
     v8::Local<v8::Object> headers = v8::Object::New(args.GetIsolate());
     headers->Set(
         v8::String::NewFromUtf8(args.GetIsolate(), "Server", v8::NewStringType::kNormal)
@@ -220,7 +214,14 @@ v8::Local<v8::Object> resp
         v8::String::NewFromUtf8(args.GetIsolate(), "HTTP/1.0 200 OK", v8::NewStringType::kNormal)
             .ToLocalChecked()
     );
+    v8::Local<v8::Function> now_cb = v8::Local<v8::Function>::New(args.GetIsolate(),g_cb);
+    const unsigned argc = 2;
+    v8::Local<v8::Value> argv[argc] = { 
+        req,
+        resp
+    };
     now_cb->Call(args.GetIsolate()->GetCurrentContext()->Global(), argc, argv);
+
     hellohttp(client,args,resp);
     //unistd库的方法用于关闭文件读取，类似fclose
     close((int)client);
