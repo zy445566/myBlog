@@ -58,7 +58,7 @@ console.log("resp:",JSON.stringify(resp))
 ```
 
 ### http.h
-这里不多说，先把需要暴露的方法写好，实际只有Http需要暴露，其他只是为了不规定函数的顺序。直接上代码。
+这里不多说，先把需要暴露的方法写好，实际只有Http需要暴露给zy_node.cc
 ```h
 // 主要是 u_short 定义需要socket.h，同时我们的http服务都是基于socket实现
 #include <sys/socket.h>
