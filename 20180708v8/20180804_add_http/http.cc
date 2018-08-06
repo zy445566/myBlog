@@ -88,6 +88,27 @@ void sendWithRN(int client_num,const char* data)
     send(client_num, cstr_rn, strlen(cstr_rn), 0);
 }
 
+void respSetHeaders(
+    int client_num,
+    const v8::FunctionCallbackInfo<v8::Value>& args,
+    v8::Local<v8::Object> resp_headers
+)
+{
+    v8::Local<v8::Array> resp_headers_keys= resp_headers->GetPropertyNames();
+    uint32_t len = resp_headers_keys->Length();
+    for(uint32_t i = 0; i < len; i++){
+        char buf[1024];
+        v8::Local<v8::String> header = resp_headers_keys->Get(i)->ToString();
+        v8::Local<v8::String> value = resp_headers->Get(header)->ToString();
+        v8::String::Utf8Value header_utf(args.GetIsolate(), header);
+        const char* header_cstr =  HttpToCString(header_utf);
+        v8::String::Utf8Value value_utf(args.GetIsolate(), value);
+        const char* value_cstr =  HttpToCString(value_utf);
+        sprintf(buf, "%s: %s", header_cstr,value_cstr);
+        sendWithRN(client_num,buf);
+    }
+}
+
 void hellohttp(intptr_t client,
 const v8::FunctionCallbackInfo<v8::Value>& args,
 v8::Local<v8::Object> resp)
@@ -100,10 +121,9 @@ v8::Local<v8::Object> resp)
     v8::String::Utf8Value status_utf(args.GetIsolate(), status);
     const char* status_cstr =  HttpToCString(status_utf);
     sendWithRN(client_num, status_cstr);
-    sprintf(buf, SERVER_STRING);
-    send(client_num, buf, strlen(buf), 0);
-    sprintf(buf, "Content-Type: text/html\r\n");
-    send(client_num, buf, strlen(buf), 0);
+    v8::Local<v8::Object> resp_headers = resp->Get(v8::String::NewFromUtf8(args.GetIsolate(), "headers", v8::NewStringType::kNormal)
+            .ToLocalChecked())->ToObject();
+    respSetHeaders(client_num,args,resp_headers);
     sprintf(buf, "\r\n");
     send(client_num, buf, strlen(buf), 0);
     v8::Local<v8::String> body = resp->Get(v8::String::NewFromUtf8(args.GetIsolate(), "body", v8::NewStringType::kNormal)
@@ -150,7 +170,7 @@ v8::Local<v8::Object> resp
         header_str=strtok(buf,": ");
         if (header_str != NULL) {
             strcpy(header_name,header_str);
-            printf("header_str=%s\n", header_str);
+            // printf("header_str=%s\n", header_str);
             header_str = strtok(NULL, ": ");
             if(header_str != NULL){
                 strcpy(header_value,header_str);
@@ -171,6 +191,18 @@ v8::Local<v8::Object> resp
     };
     v8::Local<v8::Function> now_cb = v8::Local<v8::Function>::New(args.GetIsolate(),g_cb);
     v8::Local<v8::Object> headers = v8::Object::New(args.GetIsolate());
+    headers->Set(
+        v8::String::NewFromUtf8(args.GetIsolate(), "Server", v8::NewStringType::kNormal)
+            .ToLocalChecked(),
+        v8::String::NewFromUtf8(args.GetIsolate(), "zy's httpd/0.1.0", v8::NewStringType::kNormal)
+            .ToLocalChecked()
+    );
+    headers->Set(
+        v8::String::NewFromUtf8(args.GetIsolate(), "Content-Type", v8::NewStringType::kNormal)
+            .ToLocalChecked(),
+        v8::String::NewFromUtf8(args.GetIsolate(), "text/html", v8::NewStringType::kNormal)
+            .ToLocalChecked()
+    );
     resp->Set(
         v8::String::NewFromUtf8(args.GetIsolate(), "headers", v8::NewStringType::kNormal)
             .ToLocalChecked(),headers
