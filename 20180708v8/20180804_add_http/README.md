@@ -8,13 +8,14 @@
     注意：本篇文章依旧基于上篇文章进行讲解
 
 # 准备 && 配置
-上篇文章，我们讲了如何配置gn和BUILD.gn和意义，这次不多说，这次我们要加两个配置在原配置上如下：
+
 ### 把文件先建好
 ```sh
 touch /home/zy445566/v8/zy_node_src/http.h
 touch /home/zy445566/v8/zy_node_src/http.cc 
 ```
 ### BUILD.gn
+上篇文章，我们讲了如何配置gn和BUILD.gn和意义，这次不多说，这次我们要加两个配置在原配置上如下：
 ```py
 v8_executable("zy_node") {
   sources = [
