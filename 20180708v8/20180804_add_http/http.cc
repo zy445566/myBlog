@@ -277,8 +277,9 @@ void Http(const v8::FunctionCallbackInfo<v8::Value>& args) {
                                 v8::NewStringType::kNormal).ToLocalChecked());
     return;
   }
-  v8::Persistent<v8::Function> cb(args.GetIsolate(),args[0].As<v8::Function>());
-  memcpy(&g_cb,&cb,sizeof(v8::Persistent<v8::Function>));
+  g_cb.Reset(args.GetIsolate(),args[0].As<v8::Function>());
+//   v8::Persistent<v8::Function> cb(args.GetIsolate(),args[0].As<v8::Function>());
+//   memcpy(&g_cb,&cb,sizeof(v8::Persistent<v8::Function>));
 //   cb = args[0].As<v8::Function>();
   v8::Local<v8::Object> http_object = v8::Object::New(args.GetIsolate());
   http_object->Set(
