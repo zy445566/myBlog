@@ -1,8 +1,10 @@
+#include "llvm/ADT/STLExtras.h"
 #include <stdio.h>
 #include<ctype.h>
 #include<string>
 #include<iostream>
-// clang++ -g -O3 jsvm.cpp -o jsvm && ./jsvm fibo.js
+#include "jsvm.h"
+// clang++ -g -O3 jsvm.cpp  `llvm-config --cxxflags` -o jsvm && ./jsvm fibo.js
 enum Token{
     tok_eof = -1,
     // define
@@ -14,15 +16,18 @@ enum Token{
     tok_unkown = -9999
 };
 
-static int gettoken(FILE *fp)
+static double NumVal;
+static int LastChar;
+static std::string defineStr;
+static FILE *fp;
+
+static int gettoken()
 {
-    static int LastChar = fgetc(fp);
-    static std::string defineStr;
-    // 排除空格
+    LastChar = fgetc(fp);
+    // 排除不可见字符
     while (isspace(LastChar))
     {
         LastChar = fgetc(fp);
-        std::cout<<LastChar<<std::endl;
     }
     // 排除注释
     if (LastChar=='/' && (LastChar = fgetc(fp))=='/'){
@@ -31,11 +36,12 @@ static int gettoken(FILE *fp)
         } 
         while (!feof(fp) && LastChar != '\n' && LastChar != '\r' && LastChar != 10);
         // 吃掉不可见字符
-        while (LastChar == '\n' || LastChar == '\r' || LastChar == 10){
+        while (isspace(LastChar))
+        {
             LastChar = fgetc(fp);
         }
     }
-    //识别到是[a-zA-Z][a-zA-Z0-9]*
+    // 解析[a-zA-Z][a-zA-Z0-9]*
     if (isalpha(LastChar)) {
         defineStr = LastChar;
         while (isalnum((LastChar = fgetc(fp))))
@@ -52,7 +58,47 @@ static int gettoken(FILE *fp)
             return tok_func;
         }
     }
-    return tok_unkown;
+    // 解析[0-9.]+
+    if (isdigit(LastChar) || LastChar == '.') {
+        std::string NumStr;
+        do {
+        NumStr += LastChar;
+        LastChar = fgetc(fp);
+        } while (isdigit(LastChar) || LastChar == '.');
+        NumVal = strtod(NumStr.c_str(), nullptr);
+        return tok_num;
+    }
+    return LastChar;
+}
+
+std::unique_ptr<ExprAST> LogError(const char *Str) {
+  printf("LogError: %s\n", Str);
+  return nullptr;
+}
+std::unique_ptr<PrototypeAST> LogErrorP(const char *Str) {
+  LogError(Str);
+  return nullptr;
+}
+
+static std::unique_ptr<ExprAST> ParseExpression();
+
+static std::unique_ptr<ExprAST> ParseNumberExpr() {
+  auto Result = llvm::make_unique<NumberExprAST>(NumVal);
+  gettoken();
+  return std::move(Result);
+}
+
+static std::unique_ptr<ExprAST> ParseParenExpr() {
+  gettoken(); // eat (.
+  auto V = ParseExpression();
+  if (!V) {
+      return nullptr;
+  }
+  if (LastChar != ')') {
+      return LogError("expected ')'");
+  }
+  gettoken(); // eat ).
+  return V;
 }
 
 int main(int argc, char* argv[])
@@ -61,16 +107,12 @@ int main(int argc, char* argv[])
     {
         printf("args number is error!\r\n");return -1;
     }
-    FILE *fp = fopen(argv[1],"r");
+    fp = fopen(argv[1],"r");
     if (NULL == fp)
     {
         printf("file can't open!\r\n");return -1;
     }
-    // do{
-    //     int c = fgetc(fp);
-    //     printf("token:%d\r\n",c);
-    // }while(!feof(fp));
-    int token = gettoken(fp);
+    int token = gettoken();
     printf("token:%d\r\n",token);
     fclose(fp);
     fp = NULL;

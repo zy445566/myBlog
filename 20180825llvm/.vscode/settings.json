@@ -1,0 +1,28 @@
+{
+    "files.associations": {
+        "system_error": "cpp",
+        "__config": "cpp",
+        "__nullptr": "cpp",
+        "cstddef": "cpp",
+        "exception": "cpp",
+        "initializer_list": "cpp",
+        "new": "cpp",
+        "stdexcept": "cpp",
+        "type_traits": "cpp",
+        "typeinfo": "cpp",
+        "ostream": "cpp",
+        "__locale": "cpp",
+        "iostream": "cpp",
+        "locale": "cpp",
+        "fstream": "cpp",
+        "string": "cpp",
+        "__functional_03": "cpp",
+        "functional": "cpp",
+        "iosfwd": "cpp",
+        "algorithm": "cpp",
+        "vector": "cpp"
+    },
+    "C_Cpp.default.includePath": [
+        "/usr/local/opt/llvm/include"
+    ],
+}
