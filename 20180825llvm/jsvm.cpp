@@ -49,11 +49,12 @@ static int gettoken()
     // 解析[a-zA-Z][a-zA-Z0-9]*
     if (isalpha(LastChar)) {
         defineStr = LastChar;
-        while (isalnum((LastChar = fgetc(fp))))
+        int TmpChar;
+        while (isalnum((TmpChar = fgetc(fp))) && (LastChar = TmpChar))
         {
-            defineStr += LastChar;
+            defineStr += TmpChar;
         }
-        std::cout<<defineStr<<std::endl;
+        fseek(fp,-1L,SEEK_CUR);
         if (defineStr == "var")
         {
             return tok_var;
@@ -62,6 +63,7 @@ static int gettoken()
         {
             return tok_func;
         }
+        
         return tok_id;
     }
     // 解析[0-9.]+
@@ -81,7 +83,7 @@ static int gettoken()
 }
 
 std::unique_ptr<ExprAST> LogError(const char *Str) {
-  printf("LogError: %s\n", Str);
+  printf("LogError: %s\n", Str);exit(0);
   return nullptr;
 }
 std::unique_ptr<PrototypeAST> LogErrorP(const char *Str) {
@@ -89,37 +91,18 @@ std::unique_ptr<PrototypeAST> LogErrorP(const char *Str) {
   return nullptr;
 }
 
+std::unique_ptr<FunctionAST> LogErrorF(const char *Str) {
+  LogError(Str);
+  return nullptr;
+}
+
 static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
-  std::string IdName = defineStr;
-  gettoken(); // eat identifier.
-  if (LastChar != '(') // Simple variable ref.
+    std::string IdName = defineStr;
     return llvm::make_unique<VariableExprAST>(IdName);
-  gettoken(); // eat (
-  std::vector<std::unique_ptr<ExprAST>> Args;
-  if (LastChar != ')') {
-    while (true) {
-      if (auto Arg = ParseExpression())
-        Args.push_back(std::move(Arg));
-      else
-        return nullptr;
-
-      if (LastChar == ')')
-        break;
-
-      if (LastChar != ',')
-        return LogError("Expected ')' or ',' in argument list");
-      gettoken();
-    }
-  }
-
-  gettoken();
-
-  return llvm::make_unique<CallExprAST>(IdName, std::move(Args));
 }
 
 static std::unique_ptr<ExprAST> ParseNumberExpr() {
   auto Result = llvm::make_unique<NumberExprAST>(NumVal);
-  gettoken(); // consume the number
   return std::move(Result);
 }
 
@@ -136,8 +119,12 @@ static std::unique_ptr<ExprAST> ParseParenExpr() {
 }
 
 static std::unique_ptr<ExprAST> ParsePrimary() {
-  switch (LastChar) {
+  int res = gettoken();
+  switch (res) {
   default:
+    // printf("%d,\n",res);
+    // printf("%c,\n",LastChar);
+    // std::cout<<defineStr<<std::endl;
     return LogError("unknown token when expecting an expression");
   case tok_id:
     return ParseIdentifierExpr();
@@ -163,51 +150,48 @@ static std::unique_ptr<ExprAST> ParseBinOpRHS(
     int ExprPrec,
     std::unique_ptr<ExprAST> LHS
 ) {
+  gettoken();
   while (true) {
+    
     int TokPrec = GetTokPrecedence();
-
     if (TokPrec < ExprPrec){return LHS;}
     int BinOp = LastChar;
-    gettoken(); // eat binop
     auto RHS = ParsePrimary();
-    if (!RHS)
-      return nullptr;
-
+    if (!RHS){return nullptr;}
     int NextPrec = GetTokPrecedence();
     if (TokPrec < NextPrec) {
       RHS = ParseBinOpRHS(TokPrec + 1, std::move(RHS));
-      if (!RHS)
-        return nullptr;
+      if (!RHS){return nullptr;}
     }
     // Merge LHS/RHS.
     LHS = llvm::make_unique<BinaryExprAST>(BinOp, std::move(LHS),
                                            std::move(RHS));
+    // return nullptr;
   }
 }
 
 static std::unique_ptr<ExprAST> ParseExpression() {
-  auto LHS = ParsePrimary();
-  if (!LHS)
-    return nullptr;
-
-  return ParseBinOpRHS(0, std::move(LHS));
+    auto LHS = ParsePrimary();
+    if (!LHS){
+        return nullptr;
+    }
+    return ParseBinOpRHS(0, std::move(LHS));
 }
 
 static std::unique_ptr<PrototypeAST> ParsePrototype() {
-    if (LastChar != tok_id)
-        return LogErrorP("Expected function name in prototype");
+    if (LastChar != tok_id){return LogErrorP("Expected function name in prototype");}
 
     std::string FnName = defineStr;
     gettoken();
-    if (LastChar != '(')
-        return LogErrorP("Expected '(' in prototype");
-
+    if (LastChar != '('){return LogErrorP("Expected '(' in prototype");}
     std::vector<std::string> ArgNames;
-    while (gettoken() == tok_id)
+    while (gettoken() == tok_id || LastChar==',')
+    {
+        if(LastChar==','){continue;}
         ArgNames.push_back(defineStr);
+    }
     if (LastChar != ')')
         return LogErrorP("Expected ')' in prototype");
-    gettoken();
     return llvm::make_unique<PrototypeAST>(FnName, std::move(ArgNames));
 }
 
@@ -215,17 +199,20 @@ static std::unique_ptr<FunctionAST> HandleFunction() {
     LastChar = gettoken();
     auto Proto = ParsePrototype();
     if (!Proto){return nullptr;}
+    gettoken();
+    if (LastChar != '{'){return LogErrorF("Expected '{' in prototype");}
     if (auto E = ParseExpression())
     {
+        gettoken();
+        if (LastChar != '}'){return LogErrorF("Expected '}' in prototype");}
         return llvm::make_unique<FunctionAST>(std::move(Proto), std::move(E));
     }
-    gettoken();
     return nullptr;
 }
 
 static void LoopParse() {
-    LastChar = gettoken();
     while (true) {
+        LastChar = gettoken();
         switch (LastChar) {
         case tok_eof:
             return;
@@ -234,11 +221,8 @@ static void LoopParse() {
             break;
         case tok_func:
             HandleFunction();
-            printf("%d\n",LastChar);
-            printf("%c\n",LastChar);
             break;
         default:
-
             break;
         }
     }

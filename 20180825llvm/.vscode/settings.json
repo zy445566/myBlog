@@ -21,9 +21,14 @@
         "iosfwd": "cpp",
         "algorithm": "cpp",
         "vector": "cpp",
-        "ios": "cpp"
+        "ios": "cpp",
+        "__split_buffer": "cpp",
+        "map": "cpp",
+        "istream": "cpp",
+        "tuple": "cpp"
     },
     "C_Cpp.default.includePath": [
+        "/usr/local/include",
         "/usr/local/opt/llvm/include"
     ],
 }
