@@ -3,6 +3,7 @@
 #include<ctype.h>
 #include<string>
 #include<iostream>
+#include<map>
 #include "jsvm.h"
 // clang++ -g -O3 jsvm.cpp  `llvm-config --cxxflags` -o jsvm && ./jsvm fibo.js
 enum Token{
@@ -20,6 +21,7 @@ static double NumVal;
 static int LastChar;
 static std::string defineStr;
 static FILE *fp;
+static std::map<char, int> BinOp;
 
 static int gettoken()
 {
@@ -68,6 +70,9 @@ static int gettoken()
         NumVal = strtod(NumStr.c_str(), nullptr);
         return tok_num;
     }
+    if(feof(fp)){
+        return tok_eof;
+    }
     return LastChar;
 }
 
@@ -101,6 +106,27 @@ static std::unique_ptr<ExprAST> ParseParenExpr() {
   return V;
 }
 
+static void LoopParse() {
+  while (true) {
+    switch (LastChar) {
+    case tok_eof:
+      return;
+    case ';': // ignore top-level semicolons.
+      gettoken();
+      break;
+    case tok_func:
+
+      break;
+    case tok_var:
+        
+      break;
+    default:
+
+      break;
+    }
+  }
+}
+
 int main(int argc, char* argv[])
 {
     if (argc!=2)
@@ -112,7 +138,12 @@ int main(int argc, char* argv[])
     {
         printf("file can't open!\r\n");return -1;
     }
+    BinOp['<'] = 10;
+    BinOp['+'] = 20;
+    BinOp['-'] = 20;
+    BinOp['*'] = 40;
     int token = gettoken();
+    LoopParse();
     printf("token:%d\r\n",token);
     fclose(fp);
     fp = NULL;
