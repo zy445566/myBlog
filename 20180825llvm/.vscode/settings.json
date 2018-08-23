@@ -20,7 +20,8 @@
         "functional": "cpp",
         "iosfwd": "cpp",
         "algorithm": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "ios": "cpp"
     },
     "C_Cpp.default.includePath": [
         "/usr/local/opt/llvm/include"
