@@ -25,7 +25,9 @@
         "__split_buffer": "cpp",
         "map": "cpp",
         "istream": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "bitset": "cpp",
+        "list": "cpp"
     },
     "C_Cpp.default.includePath": [
         "/usr/local/include",

@@ -73,20 +73,6 @@ static int gettoken()
     return LastChar;
 }
 
-std::unique_ptr<ExprAST> LogError(const char *Str) {
-  printf("LogError: %s\n", Str);exit(0);
-  return nullptr;
-}
-std::unique_ptr<PrototypeAST> LogErrorP(const char *Str) {
-  LogError(Str);
-  return nullptr;
-}
-
-std::unique_ptr<FunctionAST> LogErrorF(const char *Str) {
-  LogError(Str);
-  return nullptr;
-}
-
 static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
     std::string IdName = defineStr;
     gettoken();
