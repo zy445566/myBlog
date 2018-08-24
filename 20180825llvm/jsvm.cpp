@@ -27,7 +27,7 @@ static int gettoken()
         while (isspace(LastChar))
         {
             LastChar = fgetc(fp);
-            if (!isspace(LastChar)) {fseek(fp,-1L,SEEK_CUR);}
+            if (LastChar=='/') {fseek(fp,-1L,SEEK_CUR);}
         }
     }
     // 解析[a-zA-Z][a-zA-Z0-9]*
@@ -198,7 +198,11 @@ static std::unique_ptr<FunctionAST> HandleFunction() {
     {
         gettoken();
         if (LastChar != '}'){return LogErrorF("Expected '}' in prototype");}
-        return llvm::make_unique<FunctionAST>(std::move(Proto), std::move(E));
+        auto FnAST = llvm::make_unique<FunctionAST>(std::move(Proto), std::move(E));
+        if (auto *FnIR = FnAST->codegen()) {
+            FnIR->print(llvm::errs());
+        }
+        return FnAST;
     }
     return nullptr;
 }
@@ -266,7 +270,10 @@ int main(int argc, char* argv[])
     BinOp['+'] = 20;
     BinOp['-'] = 20;
     BinOp['*'] = 40;
+    TheModule = llvm::make_unique<llvm::Module>("my js jit", TheContext);
     LoopParse();
+    TheModule->print(llvm::errs(), nullptr);
+
     fclose(fp);
     fp = NULL;
     return 0;
