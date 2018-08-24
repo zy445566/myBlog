@@ -1,11 +1,6 @@
-#include "llvm/ADT/STLExtras.h"
-#include <stdio.h>
-#include<ctype.h>
-#include<string>
-#include<iostream>
-#include<map>
 #include "jsvm.h"
-// clang++ -g -O3 jsvm.cpp  `llvm-config --cxxflags` -o jsvm && ./jsvm fibo.js
+
+// clang++ -g -O3 jsvm.cpp  `llvm-config --cxxflags --ldflags --system-libs --libs all` -o jsvm && ./jsvm fibo.js
 
 static double NumVal;
 static int LastChar;
@@ -32,7 +27,7 @@ static int gettoken()
         while (isspace(LastChar))
         {
             LastChar = fgetc(fp);
-            if (LastChar=='/') {fseek(fp,-1L,SEEK_CUR);}
+            if (!isspace(LastChar)) {fseek(fp,-1L,SEEK_CUR);}
         }
     }
     // 解析[a-zA-Z][a-zA-Z0-9]*
@@ -94,7 +89,27 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str) {
 
 static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
     std::string IdName = defineStr;
-    return llvm::make_unique<VariableExprAST>(IdName);
+    gettoken();
+    if (LastChar != '('){
+        fseek(fp,-1L,SEEK_CUR);
+        return llvm::make_unique<VariableExprAST>(IdName);
+    }
+    gettoken();
+    std::vector<std::unique_ptr<ExprAST>> Args;
+    if (LastChar != ')') {
+        while (true) {
+            if (auto Arg = ParseExpression()){
+                Args.push_back(std::move(Arg));
+            } else {
+                return nullptr;
+            }
+            if (LastChar == ')'){break;}
+
+            if (LastChar != ','){return LogError("Expected ')' or ',' in argument list");}
+            gettoken();
+        }
+    }
+    return llvm::make_unique<CallExprAST>(IdName, std::move(Args));
 }
 
 static std::unique_ptr<ExprAST> ParseNumberExpr() {
