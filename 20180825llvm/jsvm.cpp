@@ -6,17 +6,6 @@
 #include<map>
 #include "jsvm.h"
 // clang++ -g -O3 jsvm.cpp  `llvm-config --cxxflags` -o jsvm && ./jsvm fibo.js
-enum Token{
-    tok_eof = -1,
-    // define
-    tok_var = -2,
-    tok_func = -3,
-    // code type
-    tok_id = -4,
-    tok_exp = -5,
-    tok_num = -6,
-    tok_unkown = -9999
-};
 
 static double NumVal;
 static int LastChar;
@@ -24,6 +13,7 @@ static std::string defineStr;
 static FILE *fp;
 static std::map<char, int> BinOp;
 static std::unique_ptr<ExprAST> ParseExpression();
+
 
 
 static int gettoken()
@@ -44,6 +34,7 @@ static int gettoken()
         while (isspace(LastChar))
         {
             LastChar = fgetc(fp);
+            if (LastChar=='/') {fseek(fp,-1L,SEEK_CUR);}
         }
     }
     // 解析[a-zA-Z][a-zA-Z0-9]*
@@ -62,6 +53,14 @@ static int gettoken()
         if (defineStr == "function")
         {
             return tok_func;
+        }
+        if (defineStr == "if")
+        {
+            return tok_if;
+        }
+        if (defineStr == "else")
+        {
+            return tok_else;
         }
         
         return tok_id;
@@ -122,9 +121,6 @@ static std::unique_ptr<ExprAST> ParsePrimary() {
   int res = gettoken();
   switch (res) {
   default:
-    // printf("%d,\n",res);
-    // printf("%c,\n",LastChar);
-    // std::cout<<defineStr<<std::endl;
     return LogError("unknown token when expecting an expression");
   case tok_id:
     return ParseIdentifierExpr();
@@ -190,8 +186,7 @@ static std::unique_ptr<PrototypeAST> ParsePrototype() {
         if(LastChar==','){continue;}
         ArgNames.push_back(defineStr);
     }
-    if (LastChar != ')')
-        return LogErrorP("Expected ')' in prototype");
+    if (LastChar != ')'){return LogErrorP("Expected ')' in prototype");}
     return llvm::make_unique<PrototypeAST>(FnName, std::move(ArgNames));
 }
 
@@ -210,6 +205,33 @@ static std::unique_ptr<FunctionAST> HandleFunction() {
     return nullptr;
 }
 
+static std::unique_ptr<ExprAST> HandleIf() {
+    gettoken();
+    if (LastChar != '('){return LogError("If Expected '(' in prototype");}
+    // condition.
+    auto Cond = ParseExpression();
+    if (!Cond){return nullptr;}
+    gettoken();
+    if (LastChar != ')'){return LogError("If Expected ')' in prototype");}
+    gettoken();
+    if (LastChar != '{'){return LogError("If Expected '{' in prototype");}
+    auto Then = ParseExpression();
+    if (!Then){return nullptr;}
+    gettoken();
+    if (LastChar != '}'){return LogError("If Expected '}' in prototype");}
+    if (LastChar != tok_else)
+        return LogError("expected else");
+    gettoken();
+    if (LastChar != '{'){return LogError("If Expected '{' in prototype");}
+    auto Else = ParseExpression();
+    gettoken();
+    if (LastChar != '}'){return LogError("If Expected '}' in prototype");}
+    if (!Else){return nullptr;}
+
+    return llvm::make_unique<IfExprAST>(std::move(Cond), std::move(Then),
+                                        std::move(Else));
+}
+
 static void LoopParse() {
     while (true) {
         LastChar = gettoken();
@@ -221,6 +243,9 @@ static void LoopParse() {
             break;
         case tok_func:
             HandleFunction();
+            break;
+        case tok_if:
+            HandleIf();
             break;
         default:
             break;

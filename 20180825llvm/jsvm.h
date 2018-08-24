@@ -1,5 +1,20 @@
 #include <vector>
 #include<string>
+enum Token{
+    tok_eof = -1,
+    // define
+    tok_var = -2,
+    tok_func = -3,
+    // code type
+    tok_id = -4,
+    tok_exp = -5,
+    tok_num = -6,
+    // choose
+    tok_if = -7,
+    tok_else = -8,
+    tok_unkown = -9999
+};
+
 namespace {
 
 /// ExprAST - Base class for all expression nodes.
@@ -46,6 +61,7 @@ public:
       : Callee(Callee), Args(std::move(Args)) {}
 };
 
+
 /// PrototypeAST - This class represents the "prototype" for a function,
 /// which captures its name, and its argument names (thus implicitly the number
 /// of arguments the function takes).
@@ -69,6 +85,16 @@ public:
   FunctionAST(std::unique_ptr<PrototypeAST> Proto,
               std::unique_ptr<ExprAST> Body)
       : Proto(std::move(Proto)), Body(std::move(Body)) {}
+};
+
+// IfExprAST - Expression class for if/then/else.
+class IfExprAST : public ExprAST {
+  std::unique_ptr<ExprAST> Cond, Then, Else;
+
+public:
+  IfExprAST(std::unique_ptr<ExprAST> Cond, std::unique_ptr<ExprAST> Then,
+            std::unique_ptr<ExprAST> Else)
+    : Cond(std::move(Cond)), Then(std::move(Then)), Else(std::move(Else)) {}
 };
 
 }
