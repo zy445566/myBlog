@@ -14,8 +14,6 @@ static FILE *fp;
 static std::map<char, int> BinOp;
 static std::unique_ptr<ExprAST> ParseExpression();
 
-
-
 static int gettoken()
 {
     LastChar = fgetc(fp);
@@ -62,7 +60,6 @@ static int gettoken()
         {
             return tok_else;
         }
-        
         return tok_id;
     }
     // 解析[0-9.]+
