@@ -29,6 +29,8 @@ enum Token{
     // choose
     tok_if = -7,
     tok_else = -8,
+    // interrupt
+    tok_return = -9,
     tok_unkown = -9999
 };
 
@@ -114,14 +116,19 @@ public:
 };
 
 /// FunctionAST - This class represents a function definition itself.
+struct FnucBody{
+    int tok;
+    std::unique_ptr<ExprAST> expr_row;
+  };
 class FunctionAST {
   std::unique_ptr<PrototypeAST> Proto;
-  std::unique_ptr<ExprAST> Body;
+  
+  std::vector<FnucBody> FnBody;
 
 public:
   FunctionAST(std::unique_ptr<PrototypeAST> Proto,
-              std::unique_ptr<ExprAST> Body)
-      : Proto(std::move(Proto)), Body(std::move(Body)) {}
+              std::vector<FnucBody> FnBody)
+      : Proto(std::move(Proto)), FnBody(std::move(FnBody)) {}
   llvm::Function *codegen();
 };
 
@@ -236,15 +243,26 @@ llvm::Function *FunctionAST::codegen() {
   for (auto &Arg : TheFunction->args())
     NamedValues[Arg.getName()] = &Arg;
 
-  if (llvm::Value *RetVal = Body->codegen()) {
-    // Finish off the function.
-    Builder.CreateRet(RetVal);
-
-    // Validate the generated code, checking for consistency.
-    verifyFunction(*TheFunction);
-
-    return TheFunction;
+  for (unsigned i = 0, e = FnBody.size(); i != e; ++i) {
+    llvm::Value *RetVal = FnBody[i].expr_row->codegen();
+    if (FnBody[i].tok==tok_return){
+      Builder.CreateRet(RetVal);
+    }
+    if(i+1==e){
+      verifyFunction(*TheFunction);
+      return TheFunction;
+    }
+    
   }
+  // if (llvm::Value *RetVal = Body->codegen()) {
+  //   // Finish off the function.
+  //   Builder.CreateRet(RetVal);
+
+  //   // Validate the generated code, checking for consistency.
+  //   verifyFunction(*TheFunction);
+
+  //   return TheFunction;
+  // }
 
   // Error reading body, remove function.
   TheFunction->eraseFromParent();

@@ -55,6 +55,10 @@ static int gettoken()
         {
             return tok_else;
         }
+        if (defineStr == "return")
+        {
+            return tok_return;
+        }
         return tok_id;
     }
     // 解析[0-9.]+
@@ -115,6 +119,7 @@ static std::unique_ptr<ExprAST> ParseParenExpr() {
   return V;
 }
 
+static int RowToken = 0;
 static std::unique_ptr<ExprAST> ParsePrimary() {
   int res = gettoken();
   switch (res) {
@@ -124,6 +129,11 @@ static std::unique_ptr<ExprAST> ParsePrimary() {
     return ParseIdentifierExpr();
   case tok_num:
     return ParseNumberExpr();
+  case tok_return:
+    RowToken = tok_return;
+    return ParsePrimary();
+  case '}':
+    return nullptr;
   case '(':
     return ParseParenExpr();
   }
@@ -194,16 +204,34 @@ static std::unique_ptr<FunctionAST> HandleFunction() {
     if (!Proto){return nullptr;}
     gettoken();
     if (LastChar != '{'){return LogErrorF("Expected '{' in prototype");}
-    if (auto E = ParseExpression())
-    {
-        gettoken();
-        if (LastChar != '}'){return LogErrorF("Expected '}' in prototype");}
-        auto FnAST = llvm::make_unique<FunctionAST>(std::move(Proto), std::move(E));
-        if (auto *FnIR = FnAST->codegen()) {
-            FnIR->print(llvm::errs());
+    std::vector<FnucBody> FnBody;
+    while(true){
+        FnucBody fnRow;
+        if (auto E = ParseExpression())
+        {
+            fnRow.expr_row = std::move(E);
+            fnRow.tok = RowToken;
+            RowToken = 0;
+            FnBody.push_back(std::move(fnRow));
+        } else {
+            if (LastChar != '}'){return LogErrorF("Expected '}' in prototype");}
+            auto FnAST = llvm::make_unique<FunctionAST>(std::move(Proto), std::move(FnBody));
+            if (auto *FnIR = FnAST->codegen()) {
+                FnIR->print(llvm::errs());
+            }
+            return FnAST;
         }
-        return FnAST;
     }
+    // if (auto E = ParseExpression())
+    // {
+    //     gettoken();
+    //     if (LastChar != '}'){return LogErrorF("Expected '}' in prototype");}
+    //     auto FnAST = llvm::make_unique<FunctionAST>(std::move(Proto), std::move(E));
+    //     if (auto *FnIR = FnAST->codegen()) {
+    //         FnIR->print(llvm::errs());
+    //     }
+    //     return FnAST;
+    // }
     return nullptr;
 }
 
