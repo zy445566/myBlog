@@ -27,7 +27,17 @@
         "istream": "cpp",
         "tuple": "cpp",
         "bitset": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "__functional_base": "cpp",
+        "__functional_base_03": "cpp",
+        "__tree": "cpp",
+        "__tuple": "cpp",
+        "array": "cpp",
+        "chrono": "cpp",
+        "limits": "cpp",
+        "memory": "cpp",
+        "ratio": "cpp",
+        "utility": "cpp"
     },
     "C_Cpp.default.includePath": [
         "/usr/local/include",
