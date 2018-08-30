@@ -1,6 +1,6 @@
 // 这是斐波纳切数
 function fibo(num) {
-    num+100;
+    fibo(num-1)+fibo(num-2);
     return num*100;
 }
 // {

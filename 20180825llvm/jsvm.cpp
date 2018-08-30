@@ -84,20 +84,17 @@ static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
         fseek(fp,-1L,SEEK_CUR);
         return llvm::make_unique<VariableExprAST>(IdName);
     }
-    gettoken();
     std::vector<std::unique_ptr<ExprAST>> Args;
-    if (LastChar != ')') {
-        while (true) {
-            if (auto Arg = ParseExpression()){
-                Args.push_back(std::move(Arg));
-            } else {
-                return nullptr;
-            }
-            if (LastChar == ')'){break;}
-
-            if (LastChar != ','){return LogError("Expected ')' or ',' in argument list");}
-            gettoken();
+    while (true) {
+        if (auto Arg = ParseExpression()){
+            Args.push_back(std::move(Arg));
+        } else {
+            return nullptr;
         }
+        if (LastChar == ')'){break;}
+            
+        if (LastChar != ','){return LogError("Expected ')' or ',' in argument list");}
+        gettoken();
     }
     return llvm::make_unique<CallExprAST>(IdName, std::move(Args));
 }
@@ -133,6 +130,8 @@ static std::unique_ptr<ExprAST> ParsePrimary() {
     RowToken = tok_return;
     return ParsePrimary();
   case '}':
+    return nullptr;
+  case ';':
     return nullptr;
   case '(':
     return ParseParenExpr();
@@ -214,6 +213,7 @@ static std::unique_ptr<FunctionAST> HandleFunction() {
             RowToken = 0;
             FnBody.push_back(std::move(fnRow));
         } else {
+            if (LastChar == ';'){continue;}
             if (LastChar != '}'){return LogErrorF("Expected '}' in prototype");}
             auto FnAST = llvm::make_unique<FunctionAST>(std::move(Proto), std::move(FnBody));
             if (auto *FnIR = FnAST->codegen()) {
@@ -222,16 +222,6 @@ static std::unique_ptr<FunctionAST> HandleFunction() {
             return FnAST;
         }
     }
-    // if (auto E = ParseExpression())
-    // {
-    //     gettoken();
-    //     if (LastChar != '}'){return LogErrorF("Expected '}' in prototype");}
-    //     auto FnAST = llvm::make_unique<FunctionAST>(std::move(Proto), std::move(E));
-    //     if (auto *FnIR = FnAST->codegen()) {
-    //         FnIR->print(llvm::errs());
-    //     }
-    //     return FnAST;
-    // }
     return nullptr;
 }
 
