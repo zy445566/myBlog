@@ -1,6 +1,7 @@
 #include "jsvm.h"
 
-// clang++ -g -O3 jsvm.cpp  `llvm-config --cxxflags --ldflags --system-libs --libs all` -o jsvm && ./jsvm fibo.js
+// clang++ -g -O3 jsvm.cpp  `llvm-config --cxxflags --ldflags --system-libs --libs all` -o jsvm
+// ./jsvm fibo.js && clang++ main.cpp fibo.js.o -o main && ./main
 
 static double NumVal;
 static int LastChar;
