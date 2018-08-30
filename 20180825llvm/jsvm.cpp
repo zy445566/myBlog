@@ -8,6 +8,7 @@ static std::string defineStr;
 static FILE *fp;
 static std::map<char, int> BinOp;
 static std::unique_ptr<ExprAST> ParseExpression();
+static std::unique_ptr<ExprAST> HandleIf();
 
 static int gettoken()
 {
@@ -124,6 +125,8 @@ static std::unique_ptr<ExprAST> ParsePrimary() {
     return LogError("unknown token when expecting an expression");
   case tok_id:
     return ParseIdentifierExpr();
+  case tok_if:
+    return HandleIf();
   case tok_num:
     return ParseNumberExpr();
   case tok_return:
@@ -155,7 +158,6 @@ static std::unique_ptr<ExprAST> ParseBinOpRHS(
 ) {
   gettoken();
   while (true) {
-    
     int TokPrec = GetTokPrecedence();
     if (TokPrec < ExprPrec){return LHS;}
     int BinOp = LastChar;
@@ -231,23 +233,20 @@ static std::unique_ptr<ExprAST> HandleIf() {
     // condition.
     auto Cond = ParseExpression();
     if (!Cond){return nullptr;}
-    gettoken();
     if (LastChar != ')'){return LogError("If Expected ')' in prototype");}
     gettoken();
     if (LastChar != '{'){return LogError("If Expected '{' in prototype");}
     auto Then = ParseExpression();
     if (!Then){return nullptr;}
-    gettoken();
     if (LastChar != '}'){return LogError("If Expected '}' in prototype");}
-    if (LastChar != tok_else)
+    if (gettoken() != tok_else)
         return LogError("expected else");
     gettoken();
-    if (LastChar != '{'){return LogError("If Expected '{' in prototype");}
+    if (LastChar != '{'){return LogError("Else Expected '{' in prototype");}
     auto Else = ParseExpression();
-    gettoken();
-    if (LastChar != '}'){return LogError("If Expected '}' in prototype");}
+    if (LastChar != '}'){return LogError("Else Expected '}' in prototype");}
     if (!Else){return nullptr;}
-
+    fseek(fp,-1L,SEEK_CUR);
     return llvm::make_unique<IfExprAST>(std::move(Cond), std::move(Then),
                                         std::move(Else));
 }

@@ -254,16 +254,6 @@ llvm::Function *FunctionAST::codegen() {
     }
     
   }
-  // if (llvm::Value *RetVal = Body->codegen()) {
-  //   // Finish off the function.
-  //   Builder.CreateRet(RetVal);
-
-  //   // Validate the generated code, checking for consistency.
-  //   verifyFunction(*TheFunction);
-
-  //   return TheFunction;
-  // }
-
   // Error reading body, remove function.
   TheFunction->eraseFromParent();
   return nullptr;
@@ -299,7 +289,7 @@ llvm::Value *IfExprAST::codegen() {
   // Codegen of 'Then' can change the current block, update ThenBB for the PHI.
   ThenBB = Builder.GetInsertBlock();
 
-  // Emit else block.
+ // Emit else block.
   TheFunction->getBasicBlockList().push_back(ElseBB);
   Builder.SetInsertPoint(ElseBB);
 
