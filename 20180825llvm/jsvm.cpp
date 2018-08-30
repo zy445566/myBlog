@@ -244,12 +244,31 @@ static std::unique_ptr<ExprAST> HandleIf() {
     gettoken();
     if (LastChar != '{'){return LogError("Else Expected '{' in prototype");}
     auto Else = ParseExpression();
+    if (LastChar ==')') {gettoken();}
+    if (LastChar ==';') {gettoken();}
     if (LastChar != '}'){return LogError("Else Expected '}' in prototype");}
     if (!Else){return nullptr;}
     fseek(fp,-1L,SEEK_CUR);
     return llvm::make_unique<IfExprAST>(std::move(Cond), std::move(Then),
                                         std::move(Else));
 }
+
+// static std::unique_ptr<ExprAST> RunMain() {
+//     std::string FnName = "main";
+//     std::vector<std::string> ArgNames;
+//     auto Proto = llvm::make_unique<PrototypeAST>(FnName, std::move(ArgNames));
+//     std::vector<FnucBody> FnBody;
+//     FnucBody fnRow;
+//     auto numberRes = llvm::make_unique<NumberExprAST>(0);
+//     fnRow.expr_row = std::move(std::move(numberRes));
+//     fnRow.tok = tok_return;
+//     FnBody.push_back(std::move(fnRow));
+//     auto FnAST = llvm::make_unique<FunctionAST>(std::move(Proto), std::move(FnBody));
+//     if (auto *FnIR = FnAST->codegen()) {
+//         FnIR->print(llvm::errs());
+//     }
+//     return nullptr;
+// }
 
 static void LoopParse() {
     while (true) {
