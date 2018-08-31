@@ -14,15 +14,15 @@
 # 有时间的话下载源码编译当然更好
 brew install llvm
 ```
-## mac还需要安装xcode命令行工具
+## mac还需要安装xcode命令行工具
 ```sh
 # 两台电脑都装了xcode,一台编译居然找不到标准库
-# 这个问题我找了好久
+# 这个问题我找了好久
 xcode-select --install
 ```
 
 # 编写AST用于分析语言结构阶段
-先定义token类型，用于识别词法结构，定义负数的原因是ascii码的字符都是正数
+先定义token类型，用于识别词法结构，定义负数的原因是ascii码的字符都是正数
 ```h
 enum Token{
     tok_eof = -1,
@@ -42,7 +42,7 @@ enum Token{
     tok_unkown = -9999
 };
 ```
-解析token的方法，也可以用于字符跳跃
+解析token的方法，也可以用于字符跳跃
 ```cpp
 static int gettoken()
 {
@@ -114,11 +114,11 @@ static int gettoken()
 ```
 再次定义语法结构数的语法，这个可以根据自己的喜好定义
 ```h
-// AST基类
+// AST基类
 class ExprAST {
 public:
   virtual ~ExprAST() = default;
-  // 这是用于实现IR代码生成的东西
+  // 这是用于实现IR代码生成的东西
   virtual llvm::Value *codegen() = 0;
 };
 
@@ -169,10 +169,10 @@ static void LoopParse() {
 ```cpp
 static std::unique_ptr<FunctionAST> HandleFunction() {
     LastChar = gettoken();
-    // 解析方法的参数
+    // 解析方法的参数
     auto Proto = ParsePrototype();
     if (!Proto){return nullptr;}
-    // 吃掉方法的大括号
+    // 吃掉方法的大括号
     gettoken();
     if (LastChar != '{'){return LogErrorF("Expected '{' in prototype");}
     // 定义方法的内容，这是一个数组，因为方法是多行的
@@ -187,7 +187,7 @@ static std::unique_ptr<FunctionAST> HandleFunction() {
             RowToken = 0;
             FnBody.push_back(std::move(fnRow));
         } else {
-            // 如果这一行是分号，让下一次gettoken去吃掉分号
+            // 如果这一行是分号，让下一次gettoken去吃掉分号
             if (LastChar == ';'){continue;}
             // 如果方法结束判断是否有大括号，没有则报异常
             if (LastChar != '}'){return LogErrorF("Expected '}' in prototype");}
@@ -195,7 +195,7 @@ static std::unique_ptr<FunctionAST> HandleFunction() {
             auto FnAST = llvm::make_unique<FunctionAST>(std::move(Proto), std::move(FnBody));
             // 生成方法的代码
             if (auto *FnIR = FnAST->codegen()) {
-                //异常则输出错误, 未出异常则输出IR
+                //异常则输出错误, 未出异常则输出IR
                 // FnIR->print(llvm::errs());
             }
             return FnAST;
@@ -204,11 +204,11 @@ static std::unique_ptr<FunctionAST> HandleFunction() {
     return nullptr;
 }
 ```
-而里面比较复杂应该是ParseExpression，用于解析表达式的方法,复杂点在于表达式中可能还有表达式，表达式里面还有表达式，有的时候思考下来，脑子里面基本是无限递归，能让脑子瞬间短路
+而里面比较复杂应该是ParseExpression，用于解析表达式的方法,复杂点在于表达式中可能还有表达式，表达式里面还有表达式，有的时候思考下来，脑子里面基本是无限递归，能让脑子瞬间短路
 ```cpp
-// 表达式解析
+// 表达式解析
 static std::unique_ptr<ExprAST> ParseExpression() {
-    // 解析表达式的左边
+    // 解析表达式的左边
     auto LHS = ParsePrimary();
     if (!LHS){
         return nullptr;
@@ -258,7 +258,7 @@ static std::unique_ptr<ExprAST> ParseBinOpRHS(
     int TokPrec = GetTokPrecedence();
     // 如果操作符优先级低，直接返回当前
     if (TokPrec < ExprPrec){return LHS;}
-    // 如果操作符优先级高，继续运算
+    // 如果操作符优先级高，继续运算
     int BinOp = LastChar;
     // 分析右表达式
     auto RHS = ParsePrimary();
@@ -299,14 +299,14 @@ public:
   FunctionAST(std::unique_ptr<PrototypeAST> Proto,
               std::vector<FnucBody> FnBody)
       : Proto(std::move(Proto)), FnBody(std::move(FnBody)) {}
-  //  定义IRcode的生成方法
+  //  定义IRcode的生成方法
   llvm::Function *codegen();
 };
 ```
 具体生成IR的方法
 ```h
 llvm::Function *FunctionAST::codegen() {
-  // 获取函数名，并检测是否是已存在的函数
+  // 获取函数名，并检测是否是已存在的函数
   llvm::Function *TheFunction = TheModule->getFunction(Proto->getName());
   
   // 如果函数不存在，则生成行数及参数并将函数重新赋值
@@ -332,7 +332,7 @@ llvm::Function *FunctionAST::codegen() {
     if (FnBody[i].tok==tok_return){
       Builder.CreateRet(RetVal);
     }
-    // 如果全部的行执行完成则校验方法并返回方法
+    // 如果全部的行执行完成则校验方法并返回方法
     if(i+1==e){
       verifyFunction(*TheFunction);
       return TheFunction;
@@ -371,7 +371,7 @@ int destFile (std::string FileOrgin) {
 
   llvm::TargetOptions opt;
   auto RM = llvm::Optional<llvm::Reloc::Model>();
-  // 将编译的机器信息录入
+  // 将编译的机器信息录入
   auto TheTargetMachine =
       Target->createTargetMachine(TargetTriple, CPU, Features, opt, RM);
   // 通过了解目标和数据布局，优化代码
@@ -387,7 +387,7 @@ int destFile (std::string FileOrgin) {
     return 1;
   }
   
-  // 代码写入流中
+  // 代码写入流中
   llvm::legacy::PassManager pass;
   auto FileType = llvm::TargetMachine::CGFT_ObjectFile;
 
@@ -395,7 +395,7 @@ int destFile (std::string FileOrgin) {
     llvm::errs() << "TheTargetMachine can't emit a file of this type";
     return 1;
   }
-  // 完成并清除流
+  // 完成并清除流
   pass.run(*TheModule);
   dest.flush();
   // 输出完成提示
