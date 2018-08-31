@@ -1,4 +1,4 @@
-// 这是斐波纳切数
+// fibo.js 这是斐波纳切数
 function fibo(num) {
     if (num<3) {
         return 1;
@@ -6,4 +6,3 @@ function fibo(num) {
         return fibo(num-1)+fibo(num-2);
     }
 }
-// console.log(fibo(9));

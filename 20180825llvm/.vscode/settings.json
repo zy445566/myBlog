@@ -37,7 +37,9 @@
         "limits": "cpp",
         "memory": "cpp",
         "ratio": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "atomic": "cpp",
+        "deque": "cpp"
     },
     "C_Cpp.default.includePath": [
         "/usr/local/include",
