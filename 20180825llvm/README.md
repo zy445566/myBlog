@@ -442,11 +442,10 @@ int main() {
     std::cout << "fibo(9) is: " << fibo(9) << std::endl;
 }
 ```
-编译并运行：
+编译并运行,如下：
 ```sh
 clang++ main.cpp fibo.js.o -o main && ./main
 ```
-效果如下：
 ![main](./outmain.png)
 
 # 总结
