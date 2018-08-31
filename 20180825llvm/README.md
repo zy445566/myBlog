@@ -450,4 +450,4 @@ clang++ main.cpp fibo.js.o -o main && ./main
 
 # 总结
 第一次写编译器感觉很凌乱，编译器本身来说还算是一个相对复杂的工程，加上js语言的灵活多变性，实现起来可能更加困难，不过这作为一个学习的例子应该是不错的，遂与大家分享。<br />
-相信llvm将来也是能为JS助力的，事实上已经有人有很大胆的想法去使用llvm编译JS，前段时间facebook的prepack就有这样一个PR[【facebook/prepack/pull/2264】](https://github.com/facebook/prepack/pull/2264)去实现用llvm将js编译成二进制而无需运行时。兄弟们！JS自举的路或许不会太远了。
+相信llvm将来也是能为JS助力的，事实上已经有人有很大胆的想法去使用llvm编译JS，前段时间facebook的prepack就有这样一个PR[【facebook/prepack/pull/2264】](https://github.com/facebook/prepack/pull/2264)去实现用llvm将js编译成二进制而无需运行时。兄弟们！JS自举的路或许不会太远了。
