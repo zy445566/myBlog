@@ -1,0 +1,19 @@
+{
+  "name": "llvm_js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zy445566/myBlog/tree/master/20180825llvm"
+  },
+  "author": "zy445566",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.0.0",
+    "llvm-node": "^2.0.8"
+  }
+}
