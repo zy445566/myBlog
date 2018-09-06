@@ -1,17 +1,18 @@
-const babel_core = require('@babel/core');
-const llvm  = require('llvm-node');
+
+const parse  = require('./lib/parse');
+const jsvm  = require('./lib/jsvm');
 const path  = require('path');
-const fs  = require('fs');
-const the_context = new llvm.LLVMContext();
-const the_module = new llvm.Module("jsvm", the_context);
+
+
+
 // node index.js fibo.js
-let jsPath = path.join(__dirname,process.argv[2] || 'fibo.js');
-let jsConent = fs.readFileSync(jsPath);
-let jsAst = babel_core.parse(jsConent);
-// console.log(jsAst);
-let func_name = 'fibo';
-const double_type = llvm.Type.getDoubleTy(the_context);
-const the_function_type = llvm.FunctionType.get(double_type,[double_type],false);
-the_function = llvm.Function.create(the_function_type,llvm.LinkageTypes.ExternalLinkage,func_name,the_module);
-let the_args = the_function.getArguments();
-the_args[0].name='num';
+if (process.argv.length<3) {
+    throw new Error('args number gt 3');
+}
+let js_path = path.join(__dirname,process.argv[2]);
+let js_ast = parse(js_path);
+let js_vm =  new jsvm(js_ast);
+js_vm.gen();
+console.log(js_vm.print());
+// let bit_code_path = path.join(__dirname,`${process.argv[2]}.o`);
+// js_vm.write(bit_code_path);
