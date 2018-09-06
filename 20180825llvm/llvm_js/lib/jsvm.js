@@ -3,7 +3,7 @@ const the_context = new llvm.LLVMContext();
 const the_module = new llvm.Module("jsvm", the_context);
 const builder = new llvm.IRBuilder(the_context);
 let variable_map = {};
-const path = require('path');
+let the_function;
 
 
 module.exports = class JSVM{
@@ -20,7 +20,7 @@ module.exports = class JSVM{
 
     functionHandler(node) {
         let func_name = node.id.name;
-        let the_function = the_module.getFunction(func_name);
+        the_function = the_module.getFunction(func_name);
         if (the_function) {
            throw new Error('function is exist');
         }
@@ -78,8 +78,8 @@ module.exports = class JSVM{
         let cond = this.binaryHandler(node.test);
         let zero = llvm.ConstantFP.get(the_context,0);
         let cond_v = builder.createFCmpONE(cond,zero,"ifcond");
-        let then_bb = llvm.BasicBlock.create(the_context,"then");
-        let else_bb = llvm.BasicBlock.create(the_context,"else");
+        let then_bb = llvm.BasicBlock.create(the_context,"then",the_function);
+        let else_bb = llvm.BasicBlock.create(the_context,"else",the_function);
         builder.createCondBr(cond_v,then_bb,else_bb);
         builder.setInsertionPoint(then_bb);
         if (!node.consequent) {throw new Error('then not extist');}
@@ -87,13 +87,15 @@ module.exports = class JSVM{
         {
             throw new Error('then body only support BlockStatement');
         }
-        let then_value = this.blockHandler(node.consequent);
-        // if (node.alternate) {
-        //     if (node.alternate.type!='BlockStatement')
-        //     {
-        //         throw new Error('else body only support BlockStatement');
-        //     }
-        // }
+        this.blockHandler(node.consequent);
+        builder.setInsertionPoint(else_bb);
+        if (node.alternate) {
+            if (node.alternate.type!='BlockStatement')
+            {
+                throw new Error('else body only support BlockStatement');
+            }
+            this.blockHandler(node.alternate);
+        }
     }
 
     binaryHandler(node) {
