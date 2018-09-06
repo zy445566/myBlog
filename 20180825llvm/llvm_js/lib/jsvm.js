@@ -63,10 +63,12 @@ module.exports = class JSVM{
 
     blockHandler(node)
     {
+        let expr_list = [];
         for(let i=0;i<node.body.length;i++)
         {
-            this.handler(node.body[i]);
+            expr_list.push(this.handler(node.body[i]));
         }
+        return expr_list;
     }
 
     ifHandler(node) {
@@ -85,14 +87,13 @@ module.exports = class JSVM{
         {
             throw new Error('then body only support BlockStatement');
         }
-        this.blockHandler(node.consequent);
-        if (node.alternate) {
-            if (node.alternate.type!='BlockStatement')
-            {
-                throw new Error('else body only support BlockStatement');
-            }
-        }
-
+        let then_value = this.blockHandler(node.consequent);
+        // if (node.alternate) {
+        //     if (node.alternate.type!='BlockStatement')
+        //     {
+        //         throw new Error('else body only support BlockStatement');
+        //     }
+        // }
     }
 
     binaryHandler(node) {
@@ -131,7 +132,8 @@ module.exports = class JSVM{
     }
 
     returnHandler(node) {
-        return builder.createRet(this.handler(node.argument));
+        let ret = builder.createRet(this.handler(node.argument));
+        return ret;
     }
 
     identifierHandler(node,parent_node) {
