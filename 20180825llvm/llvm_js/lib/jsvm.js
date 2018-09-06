@@ -73,12 +73,29 @@ module.exports = class JSVM{
         if (node.test.type!='BinaryExpression') {
             throw new Error('if conds only support binary expression');
         }
-        let conds = this.binaryHandler(node.test);
+        let cond = this.binaryHandler(node.test);
+        let zero = llvm.ConstantFP.get(the_context,0);
+        let cond_v = builder.createFCmpONE(cond,zero,"ifcond");
+        let then_bb = llvm.BasicBlock.create(the_context,"then");
+        let else_bb = llvm.BasicBlock.create(the_context,"else");
+        builder.createCondBr(cond_v,then_bb,else_bb);
+        builder.setInsertionPoint(then_bb);
+        if (!node.consequent) {throw new Error('then not extist');}
+        if (node.consequent.type!='BlockStatement')
+        {
+            throw new Error('then body only support BlockStatement');
+        }
+        this.blockHandler(node.consequent);
+        if (node.alternate) {
+            if (node.alternate.type!='BlockStatement')
+            {
+                throw new Error('else body only support BlockStatement');
+            }
+        }
 
     }
 
     binaryHandler(node) {
-        console.log(node)
         let left = this.handler(node.left,node);
         let right = this.handler(node.right,node);
         if (!left) {
@@ -98,23 +115,23 @@ module.exports = class JSVM{
                 return builder.createFDiv(left, right, 'divtmp');
             case '<':
                 left = builder.createFCmpULT(left, right, "cmpulttmp");
-                return builder.createUIToFP(left, llvm.type.getDoubleTy(the_context), "booltmp");
+                return builder.createUIToFP(left, llvm.Type.getDoubleTy(the_context), "booltmp");
             case '<=':
                 left = builder.createFCmpULE(left, right, "cmpuletmp");
-                return builder.createUIToFP(left, llvm.type.getDoubleTy(the_context), "booltmp");
+                return builder.createUIToFP(left, llvm.Type.getDoubleTy(the_context), "booltmp");
             case '>':
                 left = builder.createFCmpUGT(left, right, "cmpugttmp");
-                return builder.createUIToFP(left, llvm.type.getDoubleTy(the_context), "booltmp");
+                return builder.createUIToFP(left, llvm.Type.getDoubleTy(the_context), "booltmp");
             case '>=':
                 left = builder.createFCmpUGE(left, right, "cmpugetmp");
-                return builder.createUIToFP(left, llvm.type.getDoubleTy(the_context), "booltmp");
+                return builder.createUIToFP(left, llvm.Type.getDoubleTy(the_context), "booltmp");
             default:
                 throw new Error("invalid binary operator");
         }
     }
 
     returnHandler(node) {
-
+        return builder.createRet(this.handler(node.argument));
     }
 
     identifierHandler(node,parent_node) {
@@ -131,7 +148,7 @@ module.exports = class JSVM{
     }
 
     numberHandler(node) {
-
+        return llvm.ConstantFP.get(the_context,node.value);
     }
 
     handler(node,parent_node = null) {
