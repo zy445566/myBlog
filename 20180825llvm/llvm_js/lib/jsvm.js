@@ -4,11 +4,39 @@ const the_module = new llvm.Module("jsvm", the_context);
 const builder = new llvm.IRBuilder(the_context);
 let variable_map = {};
 let the_function;
+let init_function_map = {
+    printf:null
+};
 
 
 module.exports = class JSVM{
     constructor(js_ast) {
         this.js_ast = js_ast;
+    }
+
+    getPrintf()
+    {
+        let void_type = llvm.Type.getVoidTy(the_context);
+        let string_type = llvm.Type.getLabelTy(the_context);
+        let double_type = llvm.Type.getDoubleTy(the_context);
+        let params_list = [double_type];
+        let the_function_type = llvm.FunctionType.get(
+            double_type,params_list,false
+        );
+        the_function = llvm.Function.create(
+            the_function_type,
+            llvm.LinkageTypes.ExternalLinkage,
+            'printf',the_module
+        );
+        let the_args = the_function.getArguments();
+        // the_args[0].name = "format_string";
+        the_args[0].name = "double_num";
+        return the_function;
+    }
+
+    init()
+    {
+        init_function_map.printf = this.getPrintf();
     }
 
     programHandler(node) {
@@ -57,8 +85,8 @@ module.exports = class JSVM{
             throw new Error('function body only support BlockStatement');
         }
         this.blockHandler(node.body);
-
-        
+        llvm.verifyFunction(the_function);
+        return the_function;
     }
 
     blockHandler(node)
@@ -80,6 +108,7 @@ module.exports = class JSVM{
         let cond_v = builder.createFCmpONE(cond,zero,"ifcond");
         let then_bb = llvm.BasicBlock.create(the_context,"then",the_function);
         let else_bb = llvm.BasicBlock.create(the_context,"else",the_function);
+        let phi_bb = llvm.BasicBlock.create(the_context, "ifcont",the_function);
         builder.createCondBr(cond_v,then_bb,else_bb);
         builder.setInsertionPoint(then_bb);
         if (!node.consequent) {throw new Error('then not extist');}
@@ -87,15 +116,25 @@ module.exports = class JSVM{
         {
             throw new Error('then body only support BlockStatement');
         }
-        this.blockHandler(node.consequent);
+        let then_value_list = this.blockHandler(node.consequent);
+        if (then_value_list.length==0)
+        {
+            builder.createBr(phi_bb);
+        }
         builder.setInsertionPoint(else_bb);
+        let else_value_list =  [];
         if (node.alternate) {
             if (node.alternate.type!='BlockStatement')
             {
                 throw new Error('else body only support BlockStatement');
             }
-            this.blockHandler(node.alternate);
+            else_value_list = this.blockHandler(node.alternate);
         }
+        if (else_value_list.length==0)
+        {
+            builder.createBr(phi_bb);
+        }
+        builder.setInsertionPoint(phi_bb);
     }
 
     binaryHandler(node) {
@@ -155,6 +194,39 @@ module.exports = class JSVM{
         return llvm.ConstantFP.get(the_context,node.value);
     }
 
+    stringHandler(node) {
+        return llvm.ConstantDataArray.getString(the_context,node.value);
+    }
+
+    callHandler(node) {
+        let call_function = the_module.getFunction(node.callee.name);
+        if (!call_function) {
+            throw new Error('Unknown function referenced');
+        }
+        let call_args = call_function.getArguments();
+        let ast_args = node.arguments;
+        if (call_args.length!=ast_args.length) {
+            throw new Error('call function arguments number error');
+        }
+        let args_value = [];
+        for(let i=0;i<ast_args.length;i++) {
+            if(
+                ast_args[i].type !='BinaryExpression' && 
+                ast_args[i].type !='StringLiteral' &&
+                ast_args[i].type !='NumericLiteral' &&
+                ast_args[i].type !='CallExpression'
+            ) {
+                throw new Error('call function arguments grammer error');
+            }
+            args_value.push(this.handler(ast_args[i]));
+        }
+        return builder.createCall(call_function,args_value,'calltmp');
+    }
+
+    expressionHandler(node) {
+        return this.handler(node.expression);
+    }
+
     handler(node,parent_node = null) {
         switch(node.type) {
             case 'Program':
@@ -173,11 +245,18 @@ module.exports = class JSVM{
                 return this.identifierHandler(node,parent_node);
             case 'NumericLiteral':
                 return this.numberHandler(node);
+            case 'StringLiteral':
+                return this.stringHandler(node);
+            case 'CallExpression':
+                return this.callHandler(node);
+            case 'ExpressionStatement':
+                return this.expressionHandler(node);
             default:
                 throw new Error('not support grammar type');
         }
     }
     gen() {
+        this.init();
         this.handler(this.js_ast.program);
     }
     print() {
