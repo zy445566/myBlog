@@ -5,7 +5,7 @@ const builder = new llvm.IRBuilder(the_context);
 let variable_map = {};
 let the_function;
 let init_function_map = {
-    printf:null
+    printDouble:null
 };
 
 
@@ -14,11 +14,9 @@ module.exports = class JSVM{
         this.js_ast = js_ast;
     }
 
-    getPrintf()
+    getPrintDouble()
     {
-        let void_type = llvm.Type.getVoidTy(the_context);
-        let string_type = llvm.Type.getLabelTy(the_context);
-        let double_type = llvm.Type.getDoubleTy(the_context);
+        let double_type = llvm.Type.getDoubleTy(the_context)
         let params_list = [double_type];
         let the_function_type = llvm.FunctionType.get(
             double_type,params_list,false
@@ -26,17 +24,16 @@ module.exports = class JSVM{
         the_function = llvm.Function.create(
             the_function_type,
             llvm.LinkageTypes.ExternalLinkage,
-            'printf',the_module
+            'printDouble',the_module
         );
         let the_args = the_function.getArguments();
-        // the_args[0].name = "format_string";
-        the_args[0].name = "double_num";
+        the_args[0].name = "double_name";
         return the_function;
     }
 
     init()
     {
-        init_function_map.printf = this.getPrintf();
+        init_function_map.printDouble = this.getPrintDouble();
     }
 
     programHandler(node) {

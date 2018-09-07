@@ -6,6 +6,5 @@ function fibo(num) {
 
 function main()
 {
-    printf(111);
-    return 0;
+    return printDouble(fibo(9));
 }

@@ -62,3 +62,8 @@ typings/
 # vscode
 /.vscode/settings.json
 
+20180825llvm/llvm_js/fibo.js.s
+20180825llvm/llvm_js/fibo
+20180825llvm/llvm_js/fibo.s
+20180825llvm/llvm_js/fibo.js.bc
+20180825llvm/llvm_js/printDouble.s
