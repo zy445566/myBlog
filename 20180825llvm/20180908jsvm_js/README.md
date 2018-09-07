@@ -1,15 +1,15 @@
 # 使用JS实现JS编译器，并将目标js生成二进制
-上一篇文章 [利用LLVM实现JS的编译器，创造属于自己的语言](https://github.com/zy445566/myBlog/tree/master/20180825llvm/20180825jsvm_c) 中讲到使用llvm用C实现JS编译器，本片文章将使用JS来实现JS编译器，还是应了《Atwood定律》能够使用JavaScript实现的，必将使用JavaScript实现。本片文章C代码不超过10行，即使完全不会C也可以相对容易的阅读。
+上一篇文章 [利用LLVM实现JS的编译器，创造属于自己的语言](https://github.com/zy445566/myBlog/tree/master/20180825llvm/20180825jsvm_c) 中讲到使用llvm用C实现JS编译器，本片文章将使用JS来实现JS编译器，还是应了《Atwood定律》能够使用JavaScript实现的，必将使用JavaScript实现。本片文章C代码不超过10行，即使完全不会C也可以相对容易的阅读。
 > 本文代码仓库地址:[点这里](https://github.com/zy445566/myBlog/tree/master/20180825llvm/20180908jsvm_js) 
 
 # 本次使用npm库
 ## @babel/core
-直接使用@babel/core来进行词法分析和生成ast。
+直接使用@babel/core来进行词法分析和生成ast。
 ## llvm-node
 使用本库将ast树绑定生成IR(中间代码)和编译成二进制文件，虽然这个库看起来没什么文档，但好用api基本写在了llvm-node.d.ts里面。题外话：讲真我挺喜欢用ts写的库，但我个人不喜欢写ts，当然这并不矛盾。
 
 # 使用@babel/core进行解析
-讲真这个挺好用的，解析JS就几行代码就能生成ast,爽歪歪，具体结构不展开，自己可以尝试一下。代码也就几行，应该一看就明白了。
+讲真这个挺好用的，解析JS就几行代码就能生成ast,爽歪歪，具体结构不展开，自己可以尝试一下。代码也就几行，应该一看就明白了。
 ```js
 //parse.js
 const babel_core = require('@babel/core');
@@ -20,7 +20,7 @@ module.exports = function (js_path){
     return js_ast;
 }
 ```
-# 将解析的的AST绑定IR，实现编译器
+# 将解析的的AST绑定IR，实现编译器
 ## 语法解析开始，针对不通的类型进入不通的入口进行解析
 ```js
 //jsvm.js
@@ -30,23 +30,23 @@ class JSVM{
         switch(node.type) {
             case 'Program': // 这是主程序入口
                 return this.programHandler(node);
-            case 'FunctionDeclaration': // 当是方法的类型走这里
+            case 'FunctionDeclaration': // 当是方法的类型走这里
                 return this.functionHandler(node);
-            case 'BlockStatement': // 代码块类型走这里
+            case 'BlockStatement': // 代码块类型走这里
                 return this.blockHandler(node);
-            case 'IfStatement': // IF块类型走这里
+            case 'IfStatement': // IF块类型走这里
                 return this.ifHandler(node);
-            case 'BinaryExpression': // 二进制表达式类型走这里
+            case 'BinaryExpression': // 二进制表达式类型走这里
                 return this.binaryHandler(node);
-            case 'ReturnStatement': // 解析返回
+            case 'ReturnStatement': // 解析返回
                 return this.returnHandler(node);
-            case 'Identifier': // 变量或函数调用，需要通过父节点判断，所以传入
+            case 'Identifier': // 变量或函数调用，需要通过父节点判断，所以传入
                 return this.identifierHandler(node,parent_node);
             case 'NumericLiteral': //数字类型走这
                 return this.numberHandler(node);
             case 'StringLiteral': //文本类型走这
                 return this.stringHandler(node);
-            case 'CallExpression': // 函数调用走着
+            case 'CallExpression': // 函数调用走着
                 return this.callHandler(node);
             case 'ExpressionStatement': // 表达式类型走这
                 return this.expressionHandler(node);
@@ -61,7 +61,7 @@ class JSVM{
         // 将ast进行解析和绑定
         this.handler(this.js_ast.program);
     }
-    // 对程序主题不断解析下一个语法节点就好
+    // 对程序主题不断解析下一个语法节点就好
     programHandler(node) {
         for(let i=0;i<node.body.length;i++)
         {
@@ -75,7 +75,7 @@ class JSVM{
 ```js
 //jsvm.js
     functionHandler(node) {
-        // 拿到函数节点的函数名
+        // 拿到函数节点的函数名
         let func_name = node.id.name;
         // 判断模块中函数是否存在
         the_function = the_module.getFunction(func_name);
@@ -90,7 +90,7 @@ class JSVM{
         {
             params_list.push(double_type);
         }
-        // 把参数注入，生成函数类型
+        // 把参数注入，生成函数类型
         let the_function_type = llvm.FunctionType.get(
             double_type,params_list,false
         );
@@ -100,7 +100,7 @@ class JSVM{
             llvm.LinkageTypes.ExternalLinkage,
             func_name,the_module
         );
-        // 将参数的名称插入
+        // 将参数的名称插入
         let the_args = the_function.getArguments();
         for(let i=0;i<the_args.length;i++)
         {
@@ -123,14 +123,14 @@ class JSVM{
         }
         // 调用解析块表达式的方法
         this.blockHandler(node.body);
-        // 校验函数是否正确，不正确这个函数会直接报错
+        // 校验函数是否正确，不正确这个函数会直接报错
         llvm.verifyFunction(the_function);
         return the_function;
     }
 ```
 
 ## 块表达式解析的实现
-其实这异步就是遍历节点进行解析，是不是很简单
+其实这异步就是遍历节点进行解析，是不是很简单
 ```js
 //jsvm.js
     blockHandler(node)
@@ -148,7 +148,7 @@ class JSVM{
 ```js
 //jsvm.js
     ifHandler(node) {
-        //判断条件的类型是否是二进制表达式
+        //判断条件的类型是否是二进制表达式
         if (node.test.type!='BinaryExpression') {
             throw new Error('if conds only support binary expression');
         }
@@ -156,14 +156,14 @@ class JSVM{
         let cond = this.binaryHandler(node.test);
         // 生成数字0
         let zero = llvm.ConstantFP.get(the_context,0);
-        // 如果cond不是bool类型的指，将它转换为bool类型的值
+        // 如果cond不是bool类型的指，将它转换为bool类型的值
         let cond_v = builder.createFCmpONE(cond,zero,"ifcond");
         // 创建then和else和ifcont代码块，实际就是代码块标签
         let then_bb = llvm.BasicBlock.create(the_context,"then",the_function);
         let else_bb = llvm.BasicBlock.create(the_context,"else",the_function);
         let phi_bb = llvm.BasicBlock.create(the_context, "ifcont",the_function);
         // 创造条件判断
-        // 如果cond_v是真就跳跃到then_bb代码块，否则跳跃到else_bb代码块
+        // 如果cond_v是真就跳跃到then_bb代码块，否则跳跃到else_bb代码块
         builder.createCondBr(cond_v,then_bb,else_bb);
         // 设定往then_bb代码块写入内容
         builder.setInsertionPoint(then_bb);
@@ -174,13 +174,13 @@ class JSVM{
         }
         // 解析代码块
         let then_value_list = this.blockHandler(node.consequent);
-        // 如果代码块没内容就就跳跃到phi_bb代码块
+        // 如果代码块没内容就就跳跃到phi_bb代码块
         if (then_value_list.length==0)
         {
             builder.createBr(phi_bb);
         }
         // 设定往else_bb代码块写入内容，和then_else差不多
-        // 不同点：else允许没有
+        // 不同点：else允许没有
         builder.setInsertionPoint(else_bb);
         let else_value_list =  [];
         if (node.alternate) {
@@ -194,21 +194,21 @@ class JSVM{
         {
             builder.createBr(phi_bb);
         }
-        // 因为无论是then或else如果不中断一定会往phi_bb代码块
-        // 所以后续的代码直接在phi_bb里面写就好
+        // 因为无论是then或else如果不中断一定会往phi_bb代码块
+        // 所以后续的代码直接在phi_bb里面写就好
         builder.setInsertionPoint(phi_bb);
     }
 ```
-# 支持C扩展的实现
-首先先定义存在值
+# 支持C扩展的实现
+首先先定义存在值
 ```js
 //jsvm.js
-    // 定义一个C函数printDouble用于打印二进制变量
+    // 定义一个C函数printDouble用于打印二进制变量
     getPrintDouble()
     {
         // 获取返回值类型
         let double_type = llvm.Type.getDoubleTy(the_context)
-        // 设置参数列表
+        // 设置参数列表
         let params_list = [double_type];
         // 获取函数类型
         let the_function_type = llvm.FunctionType.get(
@@ -220,7 +220,7 @@ class JSVM{
             llvm.LinkageTypes.ExternalLinkage,
             'printDouble',the_module
         );
-        // 设置参数名称
+        // 设置参数名称
         let the_args = the_function.getArguments();
         the_args[0].name = "double_name";
         return the_function;
@@ -265,7 +265,7 @@ function main()
 ```
 开始编译,并生成中间代码和bitcode代码，如下
 ```sh
-# index.js是编译器入口，fibo.js是要被编译的函数
+# index.js是编译器入口，fibo.js是要被编译的函数
 node index.js fibo.js
 ```
 ![outbc](./tobc.png)
@@ -274,7 +274,7 @@ node index.js fibo.js
 llc fibo.js.bc -o fibo.s
 ```
 将汇编代码和我们要注入的C代码一起编译 <br />
-> 当然除了C只要能被gcc编译成汇编的也都支持作为扩展语言,本文举例C代码容易让人理解
+> 当然除了C只要能被gcc编译成汇编的也都支持作为扩展语言,本文举例C代码容易让人理解
 ```sh
 gcc printDouble.cpp fibo.s -o fibo
 ```
@@ -286,7 +286,7 @@ gcc printDouble.cpp fibo.s -o fibo
 
 
 # 总结
-这次实现是用纯JS就能实现，如果后续这个JSVM能编译覆盖所有的编译器自身所有的代码功能，理论上来说可以用JSVM编译JSVM实现自举，当然这个是一个浩大的工程，方法是有了缺的只是时间而已。
+这次实现是用纯JS就能实现，如果后续这个JSVM能编译覆盖所有的编译器自身所有的代码功能，理论上来说可以用JSVM编译JSVM实现自举，当然这个是一个浩大的工程，方法是有了缺的只是时间而已。
 
 
 
