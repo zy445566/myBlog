@@ -14,6 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.0.0",
-    "llvm-node": "^2.0.8"
+    "llvm-node": "^2.0.8",
+    "nan": "^2.11.0"
   }
 }

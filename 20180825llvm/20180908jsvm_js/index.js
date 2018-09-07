@@ -3,8 +3,6 @@ const parse  = require('./lib/parse');
 const jsvm  = require('./lib/jsvm');
 const path  = require('path');
 
-
-
 // node index.js fibo.js && llc fibo.js.bc -o fibo.s && gcc printDouble.cpp fibo.s -o fibo && ./fibo
 if (process.argv.length<3) {
     throw new Error('args number gt 3');
