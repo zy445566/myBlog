@@ -1,4 +1,4 @@
-# rust-bindings-learn
+# 教你一步一步使用rust写js扩展
 * 于[github首发](https://github.com/zy445566/myBlog/tree/master/20170721node-rust-bindings),如需转载，请先联系作者。
 * 这是一个用于制作node的rust扩展的的中文教程，接下来我将会一步一步教学。
 * 由于天朝墙的问题，建议大家先准备好代理。
@@ -39,11 +39,11 @@ npm install -g neon-cli
 neon new fib
 ```
 ------------------------
-![neon_new_fib](https://raw.githubusercontent.com/zy445566/myBlog/master/20170721node-rust-bindings/imgs/neon_new_fib.png)
+![neon_new_fib](./imgs/neon_new_fib.png)
 ---------------------------------
 我们先看一下目录结构
 -------------
-![dir-stcut](https://raw.githubusercontent.com/zy445566/myBlog/master/20170721node-rust-bindings/imgs/dir-stcut.png)
+![dir-stcut](./imgs/dir-stcut.png)
 ------------------
 接下来，切换到生成的目录，安装依赖并编译
 ``` sh
@@ -52,7 +52,7 @@ npm install
 ```
 如果出现以下情况则安装正确(如图)：
 ---------
-![build-test](https://raw.githubusercontent.com/zy445566/myBlog/master/20170721node-rust-bindings/imgs/build-test.png)
+![build-test](./imgs/build-test.png)
 ------------------
 
 ### 开始写我们的斐波那契数吧
@@ -124,4 +124,4 @@ node .\lib\index.js
 ### 看到下图，你就已经成功了，现在你可以用rust做node扩展了
 -----------------
 
-![fib-test](https://raw.githubusercontent.com/zy445566/myBlog/master/20170721node-rust-bindings/imgs/fib-test.png)
+![fib-test](./imgs/fib-test.png)
