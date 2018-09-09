@@ -200,7 +200,5 @@ $bom,$now,$year,$month,$day,$hour,$hhour,$qhour,$minute,$myhostname
 ```
 
 ## 简单的rsyslog教程结束
-如果想看rsyslog结合kafka和hbase的教程，<br />
-请点星 https://github.com/zy445566/myBlog/tree/master/20170808rsyslog  <br />
-超过100我将进行写rsyslog结合kafka和hbase的教程   <br />
+谢谢阅读，除此之外rsyslog还可以结合kafka和hbase，有兴趣可以进行扩展学习哦。
 
