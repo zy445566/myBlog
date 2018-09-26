@@ -19,7 +19,7 @@
 
 # 最早思路，直接暴力刷
 #### 当时想法:
-1. 直接用三个循环遍历三个数
+1. 直接用三个循环遍历三个数
 2. 然后给相加为0的结果排个序，再给这三个数打个map防止重复
 #### 根据上面思路走的代码:
 ```js
@@ -30,7 +30,7 @@
 var threeSum = function(nums) {
     let threeSumList = [];
     let threeSumMap = {};
-    // 1. 直接用三个循环遍历三个数
+    // 1. 直接用三个循环遍历三个数
     for(let i=0;i<nums.length;i++) {
         for (let j=i+1;j<nums.length;j++) {
             for (let k=j+1;k<nums.length;k++) {
@@ -55,11 +55,11 @@ var threeSum = function(nums) {
 
 # 然后思考了一下，试试双指针
 #### 当时想法:
-1. 先对传入的数组排序
-2. 两边指针向中心靠拢
-3. 给右指针加上辅指针，向左移
+1. 先对传入的数组排序
+2. 两边指针向中心靠拢
+3. 给右指针加上辅指针，向左移
 #### 原因：
-因为相加要为0，那么让最左边和最右边相加再不断缩小范围不就好了
+因为相加要为0，那么让最左边和最右边相加再不断缩小范围不就好了
 #### 根据上面思路走的代码:
 ```js
 /**
@@ -69,7 +69,7 @@ var threeSum = function(nums) {
 var threeSum = function(nums) {
     let threeSumList = [];
     let threeSumListMap = {};
-    // 1. 先对传入的数组排序
+    // 1. 先对传入的数组排序
     nums.sort((a,b)=>{return a-b;});
     function beatRepeat(num1,num2,num3) {
         let res = [num1,num2,num3].sort(); 
@@ -79,10 +79,10 @@ var threeSum = function(nums) {
             threeSumList.push(res)
         }
     }
-    // 2. 两边指针向中心靠拢
+    // 2. 两边指针向中心靠拢
     for (let i=0;i<nums.length;i++) {
         for (let j=nums.length-1;j>i+1;j--) {
-            // 3. 给右指针加上辅指针，向左移
+            // 3. 给右指针加上辅指针，向左移
             for(let k=j-1;k>i;k--) {
                 let sumRes = nums[i]+nums[j]+nums[k];
                 if (sumRes==0) {
@@ -97,14 +97,14 @@ var threeSum = function(nums) {
 #### 结果(貌似每个用例时间要小于三秒)：
 超出时间限制
 
-# 开始抓狂，找优化点
+# 开始抓狂，找优化点
 #### 当时想法:
 1. 不可能，我怎么会失败，肯定是细节没做好
 #### 原因：
-1. 已经排过序了，那做map的时候可以不用排序了
-2. 左右都是0的的可以直接返回了
+1. 已经排过序了，那做map的时候可以不用排序了
+2. 左右都是0的的可以直接返回了
 3. 左边的值和上一个左边值相同说明做过处理了，不需要再处理了
-4. 如果最右边的两个值相加没左边的绝对值高，那么是不是右边无论怎么左移都不可能和左边的数相加为0了
+4. 如果最右边的两个值相加没左边的绝对值高，那么是不是右边无论怎么左移都不可能和左边的数相加为0了
 5. 如果相加大于0,辅助指针可以直接偏移
 6. 如果相加已经开始小于0了,辅助指针可以直接结束本轮了
 #### 根据上面思路走的代码:
@@ -117,7 +117,7 @@ var threeSum = function(nums) {
     let threeSumList = [];
     let threeSumListMap = {};
     function beatRepeat(num1,num2,num3) {
-        // 1. 已经排过序了，那做map的时候可以不用排序了
+        // 1. 已经排过序了，那做map的时候可以不用排序了
         let res = [num1,num2,num3]; 
         let threeStr = res.join();
         if (!threeSumListMap[threeStr]) {
@@ -126,7 +126,7 @@ var threeSum = function(nums) {
         }
     }
     nums.sort((a,b)=>{return a-b;});
-    // 2. 左右都是0的的可以直接返回了
+    // 2. 左右都是0的的可以直接返回了
     if (nums[0]==0 && nums[nums.length-1]==0) {
         if (nums.length>=3) {
             return [[0,0,0]]
@@ -138,7 +138,7 @@ var threeSum = function(nums) {
         // 3. 左边的值和上一个左边值相同说明做过处理了，不需要再处理了
         if (i>0) {while(nums[i]==nums[i-1]){i++;}}
         for (let j=nums.length-1;j>i+1;j--) {
-            // 4. 如果最右边的两个值相加没左边的绝对值高，那么是不是右边无论怎么左移都不可能和左边的数相加为0了
+            // 4. 如果最右边的两个值相加没左边的绝对值高，那么是不是右边无论怎么左移都不可能和左边的数相加为0了
             if ((nums[i]+nums[j-1]+nums[j])<0){break;}
             for (let k=j-1;k>i;k--) {
                 // 5. 如果相加大于0,辅助指针可以直接偏移
@@ -159,12 +159,12 @@ var threeSum = function(nums) {
 #### 结果(貌似每个用例时间要小于三秒)：
 超出时间限制（这时心态接近崩溃@ _ @）
 
-# 冷静下来，不空想
+# 冷静下来，不空想
 #### 排查
 
 
 #### 当时想法:
-1. 那能不能实现让辅助指针直接实现跳跃呢
+1. 那能不能实现让辅助指针直接实现跳跃呢
 #### 修改点：
 ##### 原代码:
 ```js
@@ -214,7 +214,7 @@ var threeSum = function(nums) {
         for (let j=nums.length-1;j>i+1;j--) {
             if ((nums[i]+nums[j-1]+nums[j])<0){break;}
             for (let k=j-1;k>i;k--) {
-                // 辅助指针直接实现跳跃呢
+                // 辅助指针直接实现跳跃呢
                 // while (nums[i]+nums[k]+nums[j]>0) {k--;}
                 let inc = k-i;
                 while (nums[i]+nums[k]+nums[j]>0) {
