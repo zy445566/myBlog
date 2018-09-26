@@ -161,7 +161,7 @@ var threeSum = function(nums) {
 
 # 冷静下来，不空想
 #### 排查
-
+使用conosle.count打印了各个循环的计次,当数组大于3000时循环到j和k的次数超过100W次，而且k中还要进行大量运算，如果是100W次有效运算问题应该不大。但k很多都是无效运算。随准备加快k效率。
 
 #### 当时想法:
 1. 那能不能实现让辅助指针直接实现跳跃呢
@@ -238,5 +238,16 @@ var threeSum = function(nums) {
     return threeSumList;
 };
 ```
+#### 结果：
+通过全部用例
 
-# 基准测试
+# 基准测试结果
+```sh
+threeSum#1 x 0.05 ops/sec ±5.39% (5 runs sampled)
+threeSum#2 x 0.05 ops/sec ±5.05% (5 runs sampled)
+threeSum#3 x 0.34 ops/sec ±9.68% (5 runs sampled)
+threeSum#4 x 6.97 ops/sec ±2.44% (21 runs sampled)
+```
+
+# 结论
+threeSum#4执行速度几乎是threeSum#1和threeSum#2的139倍，比threeSum#3也快了接近20倍。

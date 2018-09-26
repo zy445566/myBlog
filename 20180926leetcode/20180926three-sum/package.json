@@ -1,0 +1,22 @@
+{
+  "name": "three-sum",
+  "version": "1.0.0",
+  "description": "我的历程",
+  "main": "treeSumBenchmark.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zy445566/myBlog.git"
+  },
+  "author": "zy445566",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zy445566/myBlog/issues"
+  },
+  "homepage": "https://github.com/zy445566/myBlog#readme",
+  "dependencies": {
+    "benchmark": "^2.1.4"
+  }
+}
