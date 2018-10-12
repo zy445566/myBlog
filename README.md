@@ -17,3 +17,7 @@
 * [LLVM相关(20180825)](./20180825llvm/README.md)
     * [利用LLVM实现JS的编译器，创造属于自己的语言(20180825)](./20180825llvm/20180825jsvm_c)
     * [使用JS实现JS编译器，并将目标js生成二进制(20180908)](./20180825llvm/20180908jsvm_js)
+* [leetcode相关(20180926)](./20180926leetcode/README.md)
+    * [三数之和的优化之旅(20180926)](./20180926leetcode/20180926three-sum/README.md)
+* [github假面技术(20180929)](./20180929git-fake/README.md)
+* [警惕位移运算<<的坑(20181010)](./20181010left-shift-operator-keng/README.md)
