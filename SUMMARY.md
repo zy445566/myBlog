@@ -21,5 +21,5 @@
 * [github假面技术(20180929)](./20180929git-fake/README.md)
 * [警惕位移运算<<的坑(20181010)](./20181010left-shift-operator-keng/README.md)
 * [emscripten(20181024)](./20181024emscripten/README.md)
-    * [使用emscripten实现js直接调用C代码(20180926)](./20181024emscripten/20181024emscripten-calling-c/README.md)
+    * [使用emscripten实现js直接调用C代码(20181024)](./20181024emscripten/20181024emscripten-calling-c/README.md)
 
