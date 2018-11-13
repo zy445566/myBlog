@@ -66,5 +66,5 @@ IPFS支持创建具有多种弹性的网络，无论是否具有Internet骨干�
 
 # 学习更多内容
 * [下载一个ipfs桌面客户端(支持win，mac，linux)](https://github.com/zy445566/ipfs-desktop/releases)
-* [了解IPFS的基础知识以及启动和运行中文指南](https://github.com/zy445566/ipfs-doc-zh)
+* [了解IPFS的基础知识以及启动和运行中文指南](https://github.com/zy445566/ipfs-doc-zh/blob/master/README.md)
 * [针对docker的ipfs服务](https://github.com/zy445566/ipfs-docker)
