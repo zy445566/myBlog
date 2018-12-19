@@ -371,7 +371,10 @@ int destFile (std::string FileOrgin) {
 
   llvm::legacy::PassManager pass;
   auto FileType = llvm::TargetMachine::CGFT_ObjectFile;
-
+  // 目前@objectisundefined 同学发现在llvm 7.0.0_1中下面需修改为
+  // if (TheTargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType))
+  // 主要由于llvm版本修改功能导致方法参数变更导致的
+  // 以下在LLVM version 6.0.1为正确代码
   if (TheTargetMachine->addPassesToEmitFile(pass, dest, FileType)) {
     llvm::errs() << "TheTargetMachine can't emit a file of this type";
     return 1;
