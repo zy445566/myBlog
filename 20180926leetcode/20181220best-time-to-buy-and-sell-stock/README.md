@@ -105,4 +105,4 @@
 
 个人认为动态规划虽然性能不强，但是能把问题变得很直观，让人更简单的解决问题。同时算法的杂合度不高，很方便使用分布式为每个问题进行求解。
 
-本题代码:[best-time-to-buy-and-sell-stock.js](./best-time-to-buy-and-sell-stock.js)
+本题代码:[best-time-to-buy-and-sell-stock.js](https://github.com/zy445566/myBlog/blob/master/20180926leetcode/20181220best-time-to-buy-and-sell-stock/best-time-to-buy-and-sell-stock.js)
