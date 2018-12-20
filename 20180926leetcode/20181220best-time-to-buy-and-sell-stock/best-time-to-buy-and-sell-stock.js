@@ -14,7 +14,7 @@ var maxProfit = function(prices) {
     }
     // 优化尾
     while (prices.length>0) {
-        if (prices[prices.length-1]==0) {
+        if (prices[prices.length-1] === Math.min.apply(this,prices) {
             prices.pop();
         } else {
             break;
