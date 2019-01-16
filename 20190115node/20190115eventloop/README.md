@@ -19,7 +19,7 @@ setTimeout(() => {
 ```
 
 了解node的eventloop的同学应该会这样想：
-1. 这个就是一开始将两个setTimeout放进timers的阶段。
+1. 理想情况下这个就是一开始将两个setTimeout放进timers的阶段。
 2. 等到时间到达后运行timer1，把promise1的Promise放入timers的下一阶段微任务队列中，同理继续运行timers的阶段，执行timer2，把promise2的Promise放入timers的下一阶段微任务队列中。
 3. 直到timers队列全部执行完，才开始运行微任务队列，也就是promise1和promise2.
 那么就是以下结果：
