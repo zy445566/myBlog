@@ -31,3 +31,5 @@
     * [机器学习的概念简单手记(20181121)](./20181121tfjs/20181121tfjs-learn/README.md)
 * [node(20190115)](./20190115node/README.md)
     * [又被node的eventloop坑了，这次是node的锅(20190115)](./20190115node/20190115eventloop/README.md)
+* [deno(20190125)](./20190125deno/README.md)
+    * [编译deno，deno结构解析(20190125)](./20190125deno/20190125build/README.md)
