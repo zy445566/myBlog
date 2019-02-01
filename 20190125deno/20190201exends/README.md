@@ -1,5 +1,5 @@
 # deno系列第二篇，给deno做rust扩展
-这篇文章主要接着 [《编译deno，deno结构解析》](https://github.com/zy445566/myBlog/blob/master/20190125deno/20190125build/README.md)作的第二篇，由于deno目标是给提供像浏览器一样的安全的环境，但是如果你需要在后端实现一些deno不方便实现的东西，你要如何做呢？那为什么我们不能给deno做一个扩展呢？我们就以做一个计算斐波那契数列的方法做一个deno做rust扩展。
+这篇文章主要接着 [《编译deno，deno结构解析》](https://github.com/zy445566/myBlog/blob/master/20190125deno/20190125build/README.md)作的第二篇，由于deno目标是给提供像浏览器一样的安全的环境，但是如果你需要在后端实现一些deno不方便实现的东西，你要如何做呢？那为什么我们不能给deno做一个扩展呢？我们就以做一个计算斐波那契数列的方法做一个deno做rust扩展的例子。
 
 # 第一步：定义消息类型
 上篇文章目录解析说到，deno是通过中间层使得v8和rust互相调用，那么v8是c++写的，rust又是另一门语言，那需要通讯要怎么怎么做呢？deno使用很常规的类似RPC来调用，只不过去掉了r。使用过thrift和grpc的同学都知道如果要实现多语言通讯实际上是要互相定义类型，deno也不例外，只不过使用的是flatbuffers，这里有兴趣自行学习。
