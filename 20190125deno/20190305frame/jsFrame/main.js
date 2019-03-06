@@ -1,6 +1,6 @@
-import midInject from 'midInject';
-const console = midInject.console;
-import test from './test.js';
-(async()=>{
-    console.log(test)
-})()
+import router from './router.js';
+let mian = (async()=>{
+    const console = midInject.console;
+});
+export default mian;
+mian;

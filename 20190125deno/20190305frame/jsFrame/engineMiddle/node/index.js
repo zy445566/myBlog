@@ -1,33 +1,30 @@
 import vm from 'vm';
 import fs from 'fs';
 import path from 'path';
-function getMidInjectObj(jsDir,jsPath) {
+function getMidInjectObj() {
     return {
         midInject:{
             console:console,
-            jsPath:jsPath,
-            jsDir:jsDir
         }
     }
 }
 (async()=>{
     const mainPath = './main.js';
     const mainJsPath = path.join(process.cwd(),mainPath);
-    const mainModule = getMidInjectObj(process.cwd(),mainJsPath);
-    const sandbox = vm.createContext(mainModule);
-    const main = new vm.SourceTextModule(fs.readFileSync(mainJsPath).toString(), {context:sandbox} );
+    const baseURL = new URL('file://');
+    const mainJsUrl = new URL(mainJsPath, baseURL);
+    const sandbox = vm.createContext(getMidInjectObj());
+    const main = new vm.SourceTextModule(fs.readFileSync(mainJsUrl.pathname).toString(), {context:sandbox, url: mainJsUrl.href} );
     async function linker(specifier, referencingModule) {
-        if (specifier === 'midInject') {
-            return new vm.SourceTextModule(`export default midInject;`, { context: referencingModule.context });
-        } else {
-            let jsPath = path.join(referencingModule.context.midInject.jsDir,specifier);
-            if(fs.existsSync(jsPath)){
-                return new vm.SourceTextModule(fs.readFileSync(jsPath).toString(), { context: referencingModule.context});
-            }
+        const resolved = new URL(specifier, referencingModule.url);
+        if(fs.existsSync(resolved.pathname)){
+            return new vm.SourceTextModule(fs.readFileSync(resolved.pathname).toString(), { context: referencingModule.context, url: resolved.href});
         }
         throw new Error(`Unable to resolve dependency: ${specifier}`);
     };
     await main.link(linker);
     main.instantiate();
-    await main.evaluate();
+    let mainResult = await main.evaluate();
+    let mainFunc = mainResult.result;
+    await mainFunc();
 })();
