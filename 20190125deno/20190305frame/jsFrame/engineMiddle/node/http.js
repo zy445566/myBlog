@@ -5,7 +5,7 @@ export default class Http {
     }
 
     async listen (port) {
-        http.createServer((req, res) => {
+        http.createServer(async (req, res) => {
             res.writeHead(200, {'Content-Type': 'text/html'});
             if(this.router[req.url]) {
                 let routerManger = this.router[req.url];
