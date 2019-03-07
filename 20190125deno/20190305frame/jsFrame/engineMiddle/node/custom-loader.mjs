@@ -8,7 +8,6 @@ const JS_EXTENSIONS = new Set(['.js', '.mjs']);
 const baseURL = new URL('file://');
 baseURL.pathname = `${process.cwd()}/`;
 
-
 export function resolve(specifier, parentModuleURL = baseURL, defaultResolve) {
   if (builtins.includes(specifier)) {
     return {
