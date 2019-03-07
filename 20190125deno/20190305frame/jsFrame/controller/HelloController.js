@@ -5,6 +5,6 @@ export default class HelloController {
     }
 
     hello() {
-
+        return this.helloServer.hello();
     }
 }
