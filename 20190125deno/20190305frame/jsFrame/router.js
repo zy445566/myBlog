@@ -1,6 +1,12 @@
 import HelloController from './controller/HelloController.js'
-const helloController = new HelloController();
-export default {
-    '/':{controller:helloController,method:'hello'},
-    'default':'/'
+export default class Router {
+    constructor() {
+        this.helloController = new HelloController();
+    }
+    getRouterMap() {
+        return {
+            '/':{controller:this.helloController,method:'hello'},
+            'default':'/'
+        }
+    }
 }

@@ -4,7 +4,7 @@ export default class HelloController {
         this.helloServer = new HelloServer();
     }
 
-    hello() {
-        return this.helloServer.hello();
+    async hello() {
+        return await this.helloServer.hello();
     }
 }

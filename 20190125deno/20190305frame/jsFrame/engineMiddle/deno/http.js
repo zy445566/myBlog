@@ -1,30 +1,22 @@
-import { listen } from "deno";
+import { serve } from "https://deno.land/x/std@v0.2.10/http/server.ts";
 export default class Http {
     constructor(router) {
         this.router = router;
     }
 
-    listen (port) {
-        const listener = listen("tcp", `0.0.0.0:${port}`);
-        console.log(`listen: http://127.0.0.1:${port}`);
-        let acceptConn = async ()=>{
-            let conn = await listener.accept();
-            let line = '';
-            while(line!='\n') {
-                line = await conn.read();
+    async listen (port) {
+        const listenAddr = `127.0.0.1:${port}`;
+        const s = serve(listenAddr);
+        console.log(`listen: http://${listenAddr}`);
+        for await (const req of s) {
+            if(this.router[req.url]) {
+                let routerManger = this.router[req.url];
+                req.respond({ body: new TextEncoder().encode(await routerManger.controller[routerManger.method]()) });
+            } else {
+                let routerManger = this.router[this.router.default];
+                req.respond({ body: new TextEncoder().encode(await routerManger.controller[routerManger.method]()) });
             }
-            conn.write('HTTP/1.1 200 OK');
-            conn.write('Content-Type: text/html');
-            conn.write(`Date: ${new Date().toGMTString()}`);
-            conn.write('Connection: keep-alive');
-            conn.write('Transfer-Encoding: chunked');
-            conn.write('Test');
-            conn.close();
+            
         }
-        acceptConn();
-        while(true) {
-            acceptConn();
-        }
-        listener.close();
     }
 }
