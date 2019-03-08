@@ -72,7 +72,7 @@ fi
 
 show code:
 ```js
-// engineMiddle/node/index.js 文件
+// engineMiddle/node/index.js node中间层文件
 import vm from 'vm';
 import fs from 'fs';
 import path from 'path';
@@ -133,6 +133,7 @@ function getMidInjectObj() {
 ## deno中间层方案
 由于deno没有类似VM的东西所以方法是直接挂载上去的,这就偏简单了。
 ```js
+// engineMiddle/deno/mod.js deno中间层文件
 import Http from './http.js';
 import File from './file.js';
 import main from '../../main.js';
@@ -170,6 +171,7 @@ mian;
 ## 业务层的使用
 在其他业务层如果需要特权功能，那么也需要从注入的全局变量来获取特权功能。比如下面的文件读取功能，如果我们需要加入其他的特权功能，我们也可以通过midInject来注入新的特权功能，同时实现在不同运行时中即可。
 ```js
+// server/HelloServer.js 服务层的业务文件
 export default class HelloServer {
     constructor () {
         this.File = midInject.File;
