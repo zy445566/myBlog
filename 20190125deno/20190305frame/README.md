@@ -37,7 +37,7 @@
 ## 框架DEMO目录结构
 由于是基于这个框架讲解，那么我们先讲一讲目录的结构吧。同时本文也是为了突出思想，这里不讨论框架的实现程度，简陋请忽视。
 
-代码文件链接：[点次打开查看](https://github.com/zy445566/myBlog/tree/master/20190125deno/20190305frame/jsFrame)
+代码文件链接：[点此打开查看](https://github.com/zy445566/myBlog/tree/master/20190125deno/20190305frame/jsFrame)
 ```sh
 * controller #框架的控制器目录
 * server #框架的服务层目录
