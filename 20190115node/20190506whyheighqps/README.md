@@ -1,7 +1,7 @@
 # 为什么说node具有高并发优势
-很多多人质疑node的高并发优势，并且以输出HelloWorld或输出计算结果来和传统的Java对比证明node并没有web的高并发优势，但事实真的是这样么？为什么说只输出HelloWorld性能还是比不过传统Java？异步是否还难道是不如多线程？
+很多人质疑node的高并发优势，并且以输出HelloWorld或输出计算结果来和传统的Java对比证明node并没有web的高并发优势，但事实真的是这样么？为什么说只输出HelloWorld性能还是比不过传统Java？异步是否还难道是不如多线程？
 
-但对于node的高并发优势，很多人却说的很模糊，所以我觉得是时候为node的异步模型进行正名了，希望能以更通俗的语言来解释异步模型的优势。
+尤其是对于node的高并发优势，很多人却说的很模糊，所以我觉得是时候以更通俗的语言和更接近Web编程的实际场景来解释异步模型的优势。
 
 # 先讲个小故事
 C是建筑工，Q是搬运工，Y是包工头。
@@ -44,7 +44,7 @@ public class TestServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		PrintWriter out = response.getWriter();
-    // unuseData.txt是一个40M的文件
+    // 读取文件并显示,unuseData.txt是一个40M的文件
 		File f = new File("/xxx/unuseData.txt");
         FileInputStream fip = new FileInputStream(f);
         InputStreamReader reader = new InputStreamReader(fip, "UTF-8");
@@ -60,7 +60,7 @@ public class TestServlet extends HttpServlet {
 }
 ```
 
-node代码
+node代码:
 ```js
 const http = require("http");
 const fs = require("fs");
@@ -83,7 +83,9 @@ function getUnseData() {
 }
 http.createServer( async function (request, response) {
     let sleepTime = 3000;
+    // 暂停三秒
     await nodeSleep(sleepTime);
+    // 读取文件并显示
     let unuseData = await getUnseData();
     response.end(`Node Stop The World ${sleepTime}s,unseDate:${unuseData}`);  
 }).listen(port);
@@ -121,7 +123,7 @@ Node最快在3秒左右，最慢也在3秒左右。
 传统的Java写法居然比Node慢了2到4秒！
 
 # 为什么呢？
-先解释一下代码，这两段代码都是先sleep一段时间，再读取文件展示给页面上。但Node在等待的时候让另一个已经等待完成的请求来读文件了，传统的Java却只能将等待彻底完成，才开始读文件，并且由于服务tomcat的worker恒定，worker池用完后，则需要等待worker释放，导致后一个worker的时间极大延长。
+先解释一下代码，这两段代码都是先sleep一段时间，再读取文件展示给页面上。但Node在等待的时候让另一个已经等待完成的请求来读文件了，传统的Java却只能将等待彻底完成，才开始读文件，并且由于服务tomcat的worker恒定，worker池用完后，则需要等待worker释放，导致后一个worker的时间极大延长，而Node的队列却足够长到可以应付。
 
 所以为什么只是少量计算或直接输出HelloWorld，压测时性能还不如Java是因为这个时候CPU直接打满，这会导致node直接就阻塞了，无法发挥其优势，而这时Java的多worker反而使得CPU打满充分利用CPU来计算，所以速度反而快了。
 
