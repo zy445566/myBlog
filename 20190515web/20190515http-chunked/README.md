@@ -1,5 +1,5 @@
 # 为什么在HTTP的chunked模式下不需要设置长度
-昨天看到论坛上有位同学提问，为什么Transfer-Encoding为chunked的时候不需要设置content-length，为什么非要设置content-length呢？这位同学认为HTTP中内容长度是可有可无没必要设置的。真的是这样吗？chunked模式下真的就没有设置长度吗？
+昨天看到论坛上有位同学提问，为什么Transfer-Encoding为chunked的时候不需要设置content-length？那为什么非要设置content-length呢？这位同学认为HTTP中内容长度是可有可无没必要设置的。真的是这样吗？chunked模式下真的就没有设置长度吗？
 
 # 起因
 一位同学看到《Http权威指南》p131下面写到，响应实体应该有content-type,content-length。但是这位同学在学习node时，发现他写的服务器并没有满足这两个条件。
@@ -26,7 +26,7 @@ console.log('Server running at http://127.0.0.1:8888/');
 
 ![postman-chunked.png](../20190515http-chunked/postman-chunked.png)
 
-这个问题是思考过后的结果，我认为这个问题提非常棒，我非常期待更多像这样富有思考的问题。同时感谢这位同学的提问和素材。
+`画外音`:这个问题是思考过后的结果，我认为这个问题提非常棒，我非常期待更多像这样富有思考的问题。同时感谢这位同学的提问和素材。
 
 # 但真的chunked没有给出长度吗？
 当然不是，chunked给出的长度是在内容的报文当中的，我们可以用socket简单实现一下http1.1的chunked。
