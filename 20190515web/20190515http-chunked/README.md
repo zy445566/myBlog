@@ -33,7 +33,7 @@ console.log('Server running at http://127.0.0.1:8888/');
 
 实现如下：
 ```js
-// 直接使用socket实现http1.1协议
+// 直接使用socket简单实现http1.1协议chunked部分
 const net = require('net');
 const port = 3000;
 net.createServer((socket) => {
@@ -63,7 +63,7 @@ console.log(`use: curl -v http://127.0.0.1:${port}`)
  
  比如我修改一下代码：
  ```js
-// 直接使用socket实现http1.1协议
+// 直接使用socket简单实现http1.1协议chunked部分
 const net = require('net');
 const port = 3000;
 net.createServer((socket) => {
