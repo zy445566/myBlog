@@ -48,7 +48,7 @@ G+G = 2G
 对比挨个G相加，14要加13次，而下面这种只要相加5次，是不是就少了很多。当然越大的数，少的次数就越多。比如10000要相加9999次，而用优化后的方法10000只要相加17次就能得到结果。这个优化是极度恐怖的。
 
 ## 说完标量乘法我们来看看具体G是如何相加的
-首先G相加更具推导公司分两种情况，我们用武功秘籍的方法来相称吧，以下：
+首先G相加更具推导公司分两种情况，我们用武功秘籍的方法来相称吧，以下（其中x1,y1,x2,y2,x3,y3是坐标变量）：
 ```
 相同的点相加第一式: λ≡(3x1^2+ a)/2y1(mod p)
 相同的点相加第二式: x3 ≡ λ^2 − 2x1 (mod p), y3≡ λ(x1 − x3) − y1 (mod p)
@@ -56,12 +56,92 @@ G+G = 2G
 不同的点相加第一式: λ≡ （y2 − y1）/（x2 − x1）(mod p)
 不同的点相加第二式: x3 ≡ λ^2 − x1 − x2 (mod p), y3 ≡ λ(x1 − x3) − y1 (mod p)
 ```
-即相同点。。。。不相同点。。。。
+之前说G是一个数字常量，那么为什么又和坐标产生关系了呢？因为G点就是一个坐标数字，在密码学中常常会把一个坐标根据一定的规律转换成数字。
 
-但这里又有一个问题了，除法如何计算保证不会有余，如何保证数学公式计算值的准确性？
+```
+比如G点的十六进制数字值是：
+0x0479BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
+而04表示这是一个坐标点的数字标识。
+X坐标为前64位：79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
+Y坐标为后64位：483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
+```
+按照我们之前的逻辑我们就可以将G点代入“相同的点相加第一式”，接着求出λ后则需要代入“相同的点相加第二式”求出2G，但是这又有一个问题，那就是在第一式中有除法，如果有除法就可能有余，而且可能会无限位，在密码学和包括天文学涉及大数运算都偏向于整数运算，同时小数无限位会存在一个计算机数据难以表示，即使能表示也很难代入下一步进行精确运算。此时保证数学公式计算值的准确性又是一个问题。
 
-# 未完待续！
+## 祭出“乘法逆元”解决相除导致产生小数无限位的问题
+什么是“乘法逆元”？简单来说就是将除法转换成乘法的值。举个栗子，假设a/b其实是可以转换成a*(b^-1),这里面的(b^-1)就是我们要求的乘法逆元。经过推导，我们在当取模数为素数时，可以转换成整数形式。而求解乘法逆元最为常见的算法就是通过“欧几里德算法”来求取。代码如下：
+```js
+// 欧几里德算法求某数的乘法逆元
+function inverseMulti(x,modNum) {
+    let x1= 1n,x2 = 0n,x3 = modNum;
+    // 取模相加保证求解数一定为正数
+    let y1 = 0n,y2=1n,y3=(x%modNum+modNum)%modNum;
+    let q;
+    let t1,t2,t3;
+    while(true){
+        if(y3==0n)throw new Error('multiplicative inverse modulo is no answer!');
+        if(y3==1n)return y2;
+        q = x3/y3;
+        t1=x1-q*y1;t2=x2-q*y2;t3=x3-q*y3;
+        x1=y1;x2=y2;x3=y3;
+        y1=t1;y2=t2;y3=t3;
+    }
+}
+```
+在完成乘法逆元的求解后，我们就可以根据公式很好的完成相同点相加和不同点相加，再通过我之前提到的对折运算来快数获取公钥结果。所以从上面可以知道公钥就是点的叠加，所以公钥的本质也就是一个点。
 
+# 0x03如何进行签名和验证
+通过0x02节，我们知道了如何生成私钥和公钥，假设你通过私钥(d)生成了公钥(Q),那么根据椭圆加密算法的特性，通过私钥和另一对秘钥(k(私钥),R(公钥)进行运算后可以生成一个签名，再通过我们的公钥和和另一对公钥可以验证信息的签名是否正确。
 
-# 附录
-事例代码地址：[点此打开ecdsa-secp256k1实例代码](https://github.com/zy445566/ecdsa-secp256k1)
+根据推导我们先随机生成一对秘钥k，R，再对R点的x坐标进行取模，如果为0，继续取模。再通过s = k^-1 (e + rd) mod n,其中e是签名信息的数字表示，比如签名信息(M)是"This a String"这样的字符串，那么e可以是sha256(M)得到数字摘要。其中d是你的私钥值。n是一个常量，是私钥的最大取值上限。具体实现如下：
+```js
+function sign(n,pointG,p,a,d,mNum) {
+    let k,R;
+    let r = 0n;
+    while(r==0n) {
+        // 随机生成私钥
+        k = getPrivteKeyNumByRand(n);
+        // 根据私钥计算公钥的点
+        R = getPointByNum(k,pointG,p,a);
+        // 此方法即是(R.x%n+n)%n
+        r = postiveMod(R.x,n);
+    }
+    let e = mNum;
+    let s = postiveMod(((e+(r*d))*inverseMulti(k,n)),n);
+    if(s==0n) {
+        return sign(n,pointG,p,a,d,M,encoding);
+    }
+    return {r,s};
+}
+```
+
+根据椭圆加密算法特性，我们可以推导出，当我们计算出R = (es^-1 mod n)G + (rs^-1 mod n)Q 即是计算出签名时的随机的那个公钥值，所以我们只要通过v = R.x mod n 计算出v的值，再判断r是否等于v，即可判断签名是否有效。其中G是常量点，Q为你的公钥。具体实现如下：
+
+```js
+function verify(n,pointG,p,a,pointQ,S,mNum) {
+    let {r,s} = S;
+    if(!(r>0n && r<n && s>0n && s<n)){return false;}
+    let e = mNum;
+    let w = inverseMulti(s,n);
+    let u1 = postiveMod((e*w),n);
+    let u2 = postiveMod((r*w),n);
+    let u1Point = getPointByNum(u1,pointG,p,a);
+    let u2Point = getPointByNum(u2,pointQ,p,a);
+    let pointR;
+    if(u1Point.x==u2Point.x && u1Point.y==u2Point.y) {
+        // 如果为相同点则进行叠加运算
+        pointR = addSamePoint(u1Point.x,u1Point.y,p,a);
+    } else {
+        // 如果为不相同点则进行相加运算
+        pointR = addDiffPoint(u1Point.x,u1Point.y,u2Point.x,u2Point.y,p);
+    }
+    if(pointR.x==0n && pointR.y==0n) {return false;}
+    let v = postiveMod(pointR.x,n);
+    if(v==r) {
+        return true;
+    }
+    return false;
+}
+```
+
+# 0x04附录
+至此，你已经可以通过该算法实现一个简易的钱包功能了，该算法的实例代码地址：[点此打开ecdsa-secp256k1实例代码](https://github.com/zy445566/ecdsa-secp256k1)，希望能对你有所帮助。
