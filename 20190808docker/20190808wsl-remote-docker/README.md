@@ -1,5 +1,5 @@
 # 迫于开始使用windows，但docker还是不能少
-由于本人更换公司且公司统一使用windows所以开始使用windows电脑，但unix命令行用习惯了，所以再让我重新用cmd还是powerShell想想还是不太舒服，所以转战wsl，但是一番折腾后居然发现wsl的由于是虚拟环境docker的服务端居然启动不了，但wsl用docker的客户端还是很不错的。所以想想还是在宿主机装个服务端勉勉强强还能在wsl用用，随开始安装。
+由于本人更换公司且公司统一使用windows所以开始使用windows电脑，但unix命令行用习惯了，所以再让我重新用cmd还是powerShell想想还是不太舒服，所以转战wsl(win10如果应用商店没有卸载可以点击这个连接安装[https://aka.ms/wslstore](https://aka.ms/wslstore),同时vscode重新选择默认Shell可以直接在vscode上使用哦)，但是一番折腾后居然发现wsl的由于是虚拟环境docker的服务端居然启动不了，但wsl用docker的客户端还是很不错的。所以想想还是在宿主机装个服务端勉勉强强还能在wsl用用，随开始安装。
 
 # win10家庭版给了我一个暴击
 docker在windows有两个常用版本一个是docker desktop用的是win自带的hyper-V虚拟的环境，另一个是给没有自带hyper-V的系统用toolbox用virtualbox虚拟的环境。
