@@ -4,7 +4,7 @@
 现在发挥node.js全栈(gan)优势的机会来了，拒绝两个仓库，拒绝两个命令，转战真全栈(gan)模式！
 
 # 0x01:将前后端和中间层合并到一个仓库
-合并完目录如下:(当前demo代码:[full-stack-demo地址](./full-stack-demo/))
+合并完目录如下:(当前demo代码:[full-stack-demo地址](https://github.com/zy445566/myBlog/tree/master/20190824fullstack/20190824make-full-stack-framework/full-stack-demo))
 ```sh
 full-stack-demo
 ├── app
