@@ -1,0 +1,32 @@
+{
+  "name": "full-stack-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "dev": "npx nodemon main.js",
+    "stable": "node main.js --stable",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "koa": "^2.7.0",
+    "my-i18n": "^1.0.4",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "nodemon": "^1.19.1",
+    "webpack": "^4.37.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "app/front/*"
+    ]
+  },
+  "author": "zy445566",
+  "license": "MIT"
+}

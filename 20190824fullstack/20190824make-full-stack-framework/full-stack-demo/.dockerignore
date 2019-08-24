@@ -1,0 +1,8 @@
+# Dependency directories
+node_modules/
+
+# dotenv environment variables file
+env.js
+
+# project
+webpack.bundle.js
