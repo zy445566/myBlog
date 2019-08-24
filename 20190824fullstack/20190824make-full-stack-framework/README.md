@@ -163,7 +163,7 @@ module.exports = [
     }
 ]
 ```
-配置了静态化full-stack-demo/app/front/static/目录，同时指定默认访问了index.html.而index.html则是引用了编译生成的webpack.bundle.js，这是前端环境正式生效。
+配置了静态化full-stack-demo/app/front/static/目录，同时指定默认访问了index.html.而index.html则是引用了编译生成的webpack.bundle.js，这是前端环境正式生效。(画外音:顺带推荐个国际化的模块[my-i18n](https://www.npmjs.com/package/my-i18n)还不错)
 
 index.html代码如下：
 ```html
