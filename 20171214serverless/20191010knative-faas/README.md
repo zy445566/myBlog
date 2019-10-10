@@ -1,34 +1,15 @@
 # 个人快速搭建serverless快速指南（建设中，目前只记录一些操作）
 针对ubuntu18.04版本安装
 ```sh
-apt-get update
-sudo apt-get install docker.io
-apt-get install snapd
-```
-会遇到的问题k8s.gcr.io翻墙问题，提前拉，如果已翻墙可忽略
-```sh
-docker pull mirrorgooglecontainers/kube-apiserver-amd64:v1.11.3
-docker pull mirrorgooglecontainers/kube-controller-manager-amd64:v1.11.3
-docker pull mirrorgooglecontainers/kube-scheduler-amd64:v1.11.3
-docker pull mirrorgooglecontainers/kube-proxy-amd64:v1.11.3
-docker pull mirrorgooglecontainers/pause:3.1
-docker pull mirrorgooglecontainers/etcd-amd64:3.2.18
-docker pull coredns/coredns:1.1.3
-docker tag docker.io/mirrorgooglecontainers/kube-proxy-amd64:v1.11.3 k8s.gcr.io/kube-proxy-amd64:v1.11.3
-docker tag docker.io/mirrorgooglecontainers/kube-scheduler-amd64:v1.11.3 k8s.gcr.io/kube-scheduler-amd64:v1.11.3
-docker tag docker.io/mirrorgooglecontainers/kube-apiserver-amd64:v1.11.3 k8s.gcr.io/kube-apiserver-amd64:v1.11.3
-docker tag docker.io/mirrorgooglecontainers/kube-controller-manager-amd64:v1.11.3 k8s.gcr.io/kube-controller-manager-amd64:v1.11.3
-docker tag docker.io/mirrorgooglecontainers/etcd-amd64:3.2.18  k8s.gcr.io/etcd-amd64:3.2.18
-docker tag docker.io/mirrorgooglecontainers/pause:3.1  k8s.gcr.io/pause:3.1
-docker tag docker.io/coredns/coredns:1.1.3  k8s.gcr.io/coredns:1.1.3
-
+sudo apt-get update
+sudo apt-get install snapd -y
 ```
 
 microk8s
 ```sh
-sudo snap install --classic microk8s # 已翻墙直接使用最新版，只使用docker的组件containerd
-# snap install microk8s --classic --channel=1.13/stable
+sudo snap install --classic microk8s
 ```
+k8s.gcr.io
 安装个dashboard方便可视化看数据
 ```sh
 sudo microk8s.status
