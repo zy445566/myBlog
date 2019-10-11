@@ -8,6 +8,7 @@ sudo apt-get install snapd -y
 microk8s
 ```sh
 sudo snap install --classic microk8s # export PATH=$PATH:/snap/bin/
+sudo snap alias microk8s.kubectl kubectl
 ```
 k8s.gcr.io被墙问题
 /var/snap/microk8s/current/args/文件夹所有toml后缀的文件的k8s.gcr.io替换为mirrorgooglecontainers
@@ -21,9 +22,19 @@ sudo microk8s.enable dns dashboard
 microk8s.kubectl -n kube-system edit configmap/coredns 
 # 编辑 forward . 223.5.5.5 223.6.6.6，换阿里云dns，因为8.8.8.8是谷歌的会导致无法访问
 # vim:%s/8.8.8.8\ 8.8.4.4/223.5.5.5\ 223.6.6.6/g
+echo '#!/bin/bash
+for podname in $(kubectl -n kube-system get -o=name pod)
+do
+    mkdir -p $(dirname $podname)
+    echo $(basename $podname)
+    kubectl -n kube-system get pod  -o yaml $(basename $podname) > $podname.yaml
+    sed -i "s/k8s.gcr.io/mirrorgooglecontainers/g" $podname.yaml
+    kubectl  -n kube-system replace -f $podname.yaml
+done' > replace_mirror.sh
+sh replace_mirror.sh
 sudo microk8s.kubectl cluster-info
 cat /snap/microk8s/current/basic_auth.csv # 获取账号密码password,user,uid,"group1,group2,group3"
-sudo microk8s.config # 获取登陆密码
+sudo microk8s.config # 获取登陆密码,注意最好拷贝出来看看不然容易拷贝错误
 microk8s.kubectl -n kube-system get pod # 看status，dashboard有没有正常启动
 microk8s.kubectl -n kube-system describe pod # 看描述是否报错
 microk8s.kubectl -n kube-system get secret | grep default-token | cut -d " " -f1 # 获取token
