@@ -1,4 +1,13 @@
 # 个人快速搭建serverless快速指南（建设中，目前只记录一些操作）
+https://multipass.run/#install
+```sh
+multipass launch --name ubuntults
+multipass exec ubuntults bash
+# 进入后如果需要代理则需要获取宿主机的地址进行代理
+# 比如我在宿主机内网ip192.168.64.1
+# 那么代理是export http_proxy=http://192.168.64.1:1087;export https_proxy=http://192.168.64.1:1087;
+```
+
 针对ubuntu18.04版本安装
 ```sh
 sudo apt-get update
