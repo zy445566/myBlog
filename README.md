@@ -7,7 +7,7 @@
 * [教你一步一步利用rsyslog搭建自己的日志系统(20170808)](./20170808rsyslog/README.md)
 * [serverless(20171214)](./20171214serverless/README.md)
     * [Node.js的CPU密集计算的终结解决方案(20171214)](./20171214serverless/20171214first-use/README.md)
-    * [个人搭建serverless架构快速指南(20191014)](./20171214serverless/20191010knative-faas/README.md)
+    * [个人搭建serverless架构快速指南(20191010)](./20171214serverless/20191010knative-faas/README.md)
 * [nodejs面向指针编程(20180402)](./20180402type-pointer/README.md)
 * [针对使用非块运行和块运行并发压测对比(20180414)](./20180414block-run/README.md)
 * [实战线上内存泄漏问题(20180517)](./20180517memory-out/README.md)
