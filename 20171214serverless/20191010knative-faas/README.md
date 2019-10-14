@@ -190,6 +190,7 @@ pod/networking-istio-8fc67796d-75p4b
 pod/webhook-dfc9dd4c4-874cg
 pod/coredns-9b8997588-t5lrn
 ```
+到这里knavtive就搭建完了，可以走我们第一个例子了
 
 # Hello World
 1. npm初始化package.json(./package.json)
