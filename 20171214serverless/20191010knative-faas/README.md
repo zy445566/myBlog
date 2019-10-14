@@ -190,14 +190,6 @@ pod/networking-istio-8fc67796d-75p4b
 pod/webhook-dfc9dd4c4-874cg
 pod/coredns-9b8997588-t5lrn
 ```
-```sh
-echo '#!/bin/bash
-for podname in $(sudo microk8s.kubectl -n $namespace get -o=name pod)
-do
-    sudo microk8s.kubectl delete pod $(basename $podname) --all-namespaces
-done' > replace_mirror.sh
-sh restart_all_pod.sh {替换成你需要重新替换的命名空间}
-```
 
 # Hello World
 1. npm初始化package.json(./package.json)
