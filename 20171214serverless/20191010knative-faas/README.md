@@ -48,6 +48,35 @@ sudo sed -i 's/k8s.gcr.io/{这里替换成你自己的私库地址}/g' `sudo gre
 # 完成后重置下服务，这里可以多重置几次直到提示服务重启完成
 sudo microk8s.reset 
 ```
+# 设置主从服务
+我这里只展示master和slave1节点的的主从设置，如果要设置slave2节点，请重复下面的步骤，如下：
+```sh
+# 进入master节点
+multipass exec m1 bash 
+# 设置为k8s的master节点
+sudo microk8s.add-node 
+# 这里第一行会输出Join node with: microk8s.join .....
+# 然后复制这一行
+# 不是其它行的，不要搞错了
+# 退出主节点
+exit
+# 进入slave1节点，如果要进slave2，则为s2
+multipass exec s1 bash 
+# 下面这行是我主节点输出的，你们的是不一样的
+sudo microk8s.join 192.168.64.3:25000/bBhVYWpAEdgVdzchAidRMHbqRzevXXEt
+# 退出slave1节点
+exit
+```
+查看节点是否完成，如下：
+```sh
+sudo microk8s.kubectl get no
+# 输出如下：
+NAME           STATUS   ROLES    AGE     VERSION
+192.168.64.4   Ready    <none>   3m35s   v1.16.0
+192.168.64.5   Ready    <none>   2m38s   v1.16.0
+m1             Ready    <none>   22m     v1.16.0
+```
+到这里主从设置就完成了，如果机器好的话建议最后设置主从，毕竟分布后没有单机方便调试了。
 
 # 开启k8s的dns服务
 ```sh
@@ -170,34 +199,77 @@ done' > replace_mirror.sh
 sh restart_all_pod.sh {替换成你需要重新替换的命名空间}
 ```
 
-# 设置主从服务
-终于轮到slave登场了，我这里只展示master和slave1节点的的主从设置，如果要设置slave2节点，请重复下面的步骤，如下：
-```sh
-# 进入master节点
-multipass exec m1 bash 
-# 设置为k8s的master节点
-sudo microk8s.add-node 
-# 这里第一行会输出Join node with: microk8s.join .....
-# 然后复制这一行
-# 不是其它行的，不要搞错了
-# 退出主节点
-exit
-# 进入slave1节点，如果要进slave2，则为s2
-multipass exec s1 bash 
-# 下面这行是我主节点输出的，你们的是不一样的
-sudo microk8s.join 192.168.64.3:25000/bBhVYWpAEdgVdzchAidRMHbqRzevXXEt
-# 退出slave1节点
-exit
-```
-查看节点是否完成，如下：
-```sh
-sudo kubectl get no
-# 输出如下：
-NAME           STATUS   ROLES    AGE     VERSION
-192.168.64.4   Ready    <none>   3m35s   v1.16.0
-192.168.64.5   Ready    <none>   2m38s   v1.16.0
-m1             Ready    <none>   22m     v1.16.0
-```
-到这里主从设置就完成了
-
 # Hello World
+1. npm初始化package.json(./package.json)
+```json
+{
+  "name": "hello-world",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "zy445566",
+  "license": "MIT"
+}
+```
+2. Hello World代码(./index.js)
+```js
+const http = require('http');
+const port = process.env.PORT || 8080;
+http.createServer((req, res) => {
+    const target = process.env.TARGET || 'World';
+    res.end(`Hello ${target}!`);
+}).listen(port);
+console.log(`listening on port:http://127.0.0.1:${port}`);
+```
+3. 构建docker文件并推送(./Dockerfile)
+```Dockerfile
+FROM node:12-slim
+WORKDIR /usr/src/app
+COPY . ./
+RUN npm install
+CMD [ "npm", "start" ]
+```
+比如我的docker.io的id是zy445566
+```sh
+docker build -t zy445566/helloworld-nodejs .
+docker push zy445566/helloworld-nodejs
+```
+4. 写service的yaml文件并部署(./service.yaml)
+```yaml
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: helloworld-nodejs
+  namespace: default
+spec:
+  template:
+    spec:
+      containers:
+      - image: docker.io/zy445566/helloworld-nodejs
+        env:
+        - name: TARGET
+          value: "Node.js Sample Native v1"
+```
+部署服务
+```sh
+kubectl apply --filename service.yaml
+```
+5. 获取ip并访问
+```sh
+echo 'INGRESSGATEWAY=knative-ingressgateway
+if kubectl get configmap config-istio -n knative-serving &> /dev/null; then
+    INGRESSGATEWAY=istio-ingressgateway
+fi
+kubectl get svc $INGRESSGATEWAY --namespace istio-system' > get_ip_address.sh
+sh get_ip_address.sh
+kubectl get ksvc helloworld-nodejs  --output=custom-columns=NAME:.metadata.name,URL:.status.url
+curl -H "Host: helloworld-nodejs.default.example.com" http://{IP_ADDRESS} # 这个是get_ip_address获取的地址
+# output: Hello Node.js Sample Native v1!
+```
+
+# 总结
+至此使用microk8s搭建的Knative服务总体来说还是不错，但是microk8s问题也挺多的，本来抱着省心去做的，结果也不是那么省心，期待microk8s后续能越做越好吧。就Knative来说服务偏大，单机基本无法承载，远远超出了我的预想，不建议为了实现serverless架构就动用这个牛刀，服务复杂后再上这个也不迟。对于multipass用来虚拟环境做分布式应用测试还不错，是个小而美的东西。
