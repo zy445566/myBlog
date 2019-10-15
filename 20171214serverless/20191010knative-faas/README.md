@@ -118,7 +118,7 @@ echo 'N' | sudo microk8s.enable istio
 ```sh
 sudo microk8s.kubectl get pods --all-namespaces
 ```
-这里有些istio老是健康检查失败，我觉得是microk8s的BUG,可能是重启容器后kubelet未启动导致
+这里有些istio老是健康检查失败，我觉得是microk8s的BUG,可能是重启容器后kubelet未启动导致，重启下全部microk8s就好了
 ```sh
 sudo snap stop microk8s
 sudo snap start microk8s
