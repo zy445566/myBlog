@@ -1,5 +1,5 @@
 
-import AddList from './components/AddList.js'
+import './element-registry.js';
 class AppContainer extends HTMLElement {
     constructor() {
         super();
@@ -14,15 +14,20 @@ class AppContainer extends HTMLElement {
         </style>
         <div class="container">
             <h1>Click Me!</h1>
-            <add-list/>
+            <my-router>
+                <my-browse-route path="/data-bind" tag="data-bind"></my-browse-route>
+                <my-browse-route path="/add-list" tag="add-list"></my-browse-route>
+            </my-router>
         </div>`;
         const content = template.content.cloneNode(true);
         const shadow = this.attachShadow( { mode: 'closed' } );
+        const paths = ['/', '/data-bind', '/add-list'];
         content.querySelector('h1').addEventListener('click',()=>{
-            console.log('Click Me!')
+            let pathIndex = paths.indexOf(window.location.pathname);
+            pathIndex=(pathIndex==paths.length-1?0:pathIndex+1);
+            window.location.pathname = paths[pathIndex]
         })
-        window.customElements.define('add-list', AddList);
         shadow.appendChild(content);
     }
   }
-  window.customElements.define('app-container', AppContainer);
+window.customElements.define('app-container', AppContainer);

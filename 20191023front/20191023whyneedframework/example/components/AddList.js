@@ -3,7 +3,7 @@ export default class AddList extends HTMLElement {
         super();
         const template = document.createElement('template');
         this.data = {
-            inputVal:'',
+            inputVal:'hello',
             list:[]
         }
         template.innerHTML = this.getHtml()
@@ -23,9 +23,9 @@ export default class AddList extends HTMLElement {
     getHtml() {
         return `
         <di>
-            <input type="text" value="hello"/><button type="button">add</button>
+            <input type="text" value="${this.data.inputVal}"/><button type="button">add</button>
             <ul>${this.getLi()}</ul>
-        <div>`;
+        </div>`;
     }
     getLi() {
         return `${this.data.list.map((val)=>{
