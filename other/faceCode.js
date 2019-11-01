@@ -21,3 +21,4 @@ const buf = Buffer.from([
     0b11100011,0b10000000,0b10000010
 ]);
 console.log(buf.toString('utf8')) //面向代码面向君，不负代码不负卿。
+// 以上是用宇宙最无所不能的JS语言完成，同意请点赞
