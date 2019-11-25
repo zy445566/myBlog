@@ -53,3 +53,5 @@
     * [为什么我们还要使用前端框架来构建页面？(20191023)](./20191023front/20191023whyneedframework/README.md)
 * [quickjs(20191029)](./20191029quickjs/README.md)
     * [quickjs初体验(20191029)](./20191029quickjs/20191029touch/README.md)
+* [javascript的设计模式(20191118)](https://github.com/zy445566/design-pattern-in-javascript/)
+    * [javascript的设计模式(20191118)](https://github.com/zy445566/design-pattern-in-javascript/)
