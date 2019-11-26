@@ -1,4 +1,4 @@
-# 写javascript的设计模式的总结
+# 写《javascript的设计模式》的一些总结
 最近复刻了一个[《javascript的设计模式》](https://github.com/zy445566/design-pattern-in-javascript/)。也再一次温习了js的一些看似不怎么用的知识点，但是在设计模式中又是非常重要的。对于这种容易遗忘的细节但却重要的东西，我觉得来记录这些知识点，以便需要的时候可以看看。
 
 # 0x1 如何通过基类克隆一个子类对象
