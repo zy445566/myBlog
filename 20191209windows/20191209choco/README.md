@@ -9,13 +9,14 @@ choco是win10自带的！自带的！自带的！包管理工具，有点类似�
 安装套件一把梭：
 ```sh
 choco install git.install -y
-choco install docker -y
+choco install docker-desktop -y
 # 指定个nodejs版本
 choco install nodejs --version 8.9 -y
 choco install mysql -y
 choco install redis-64 -y
 choco install mongodb.core -y
 ```
+查看或搜索软件可以通过：[https://chocolatey.org/packages](https://chocolatey.org/packages)
 
 # 其他功能
 升级套件：
