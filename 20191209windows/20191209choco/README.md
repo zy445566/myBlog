@@ -40,6 +40,6 @@ choco list
 ```
 
 # 结语
-干净利落简单。
+默认安装路径C:\ProgramData\chocolatey\lib,干净利落简单。
 
 
