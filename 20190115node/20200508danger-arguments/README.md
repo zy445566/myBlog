@@ -42,7 +42,7 @@ console.log(...new Array(2**17).fill(0xff))
 1. 接下来我们就来逐一排查。首先确定是否是真的因为栈不够用了
 ```sh
 # 通过调整栈大小，来判断是否是栈耗尽了，stack-size的单位是KB，默认是984
-node --stack-size=2048 -e "new Array().push(...Buffer.allocUnsafe(2**16))"
+node --stack-size=2048 -e "new Array().push(...Buffer.allocUnsafe(2**17))"
 ```
 发现果然运行正常，所以可以确定是栈耗尽了
 
