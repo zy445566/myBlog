@@ -1,0 +1,15 @@
+{
+  "name": "getface",
+  "version": "1.0.0",
+  "description": "",
+  "main": "node-index.js",
+  "dependencies": {
+    "jimp": "^0.12.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "zy445566",
+  "license": "MIT"
+}
