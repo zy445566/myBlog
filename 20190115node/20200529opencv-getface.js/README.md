@@ -182,6 +182,8 @@ function onOpenUtilsReady() {
 
 ![webOut.png](./example/webOut.png)
 
+[实例地址展示地址，需翻墙](https://zy445566.github.io/opencv/)
+
 
 # 最后的选型
 虽然nodejs服务端和JS前端都实现了扣脸功能，但考虑到这个功能非常适合做边缘计算，所以放弃了nodejs服务端的实现，直接使用前端实现扣脸，既高效实现扣脸保证用户体验，又节约图片上传和下载的带宽，为用户和公司节约了资源。WebAssembly牛逼！emscripten牛逼！opencv.js牛逼！Node.js牛逼！JS牛逼！
