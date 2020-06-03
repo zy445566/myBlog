@@ -188,6 +188,6 @@ function onOpenUtilsReady() {
 # 最后的选型
 虽然nodejs服务端和JS前端都实现了扣脸功能，若直接使用前端实现扣脸，可以实现扣脸保证用户体验，又节约图片上传和下载的带宽，为用户和公司节约了资源，充分利用边缘计算优势。
 
-但若前端实现，但考虑到opencv.js的wasm文件过大，需要做进度条加载文件比较麻烦，前端进度很可能来不及，且对于前端复杂度度提升有风险超过前端所能承受的范围，所以最终还是使用nodejs服务端的加载opencv.js实现。
+但若前端实现，考虑到opencv.js的wasm文件过大，需要做进度条加载文件比较麻烦，前端进度很可能来不及，且对于前端复杂度度提升有风险超过前端所能承受的范围，所以最终还是使用nodejs服务端的加载opencv.js实现。
 
-但同时能实现前端和后端的服务，也不禁感叹一声WebAssembly牛逼！emscripten牛逼！opencv.js牛逼！Node.js牛逼！JS牛逼！
+同时能实现前端和后端的服务，也不禁感叹一声WebAssembly牛逼！emscripten牛逼！opencv.js牛逼！Node.js牛逼！JS牛逼！
