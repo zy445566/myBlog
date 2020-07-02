@@ -29,13 +29,13 @@ while(true) {
 看来case1,[require-vm](https://www.npmjs.com/package/require-vm)如果针对不小心使用了内存泄漏的库可以很方便的解决，而如果要你要保留leakArray数组的话，也只需要保证leak方法，不被释放即可，如下。
 ```js
 const requireVM = require('require-vm');
-const leak = requireVM('./case1.js').leak;
+let leak = requireVM('./case1.js').leak;
 // 下面三个方法还保持leakArray数组还存活
 leak();
 leak();
 leak();
-// 但此时只要leak被delete或被重新赋值，即可释放leakArray空间
-delete leak;
+// 但此时只要leak被重新赋值，即可释放leakArray空间
+leak = null;
 ```
 
 ## Case2：无限制设置属性和值
@@ -77,7 +77,6 @@ while(true) {
   memoizeGetN(i);
   /**
    * 当重新赋值后原memo的引用也会被丢弃
-   * 如果完全不需要可delete memoizeGetN
    * 但这样做原本用于缓存计算结果也无效了
    */
   memoizeGetN = memoize(getN);
@@ -100,15 +99,15 @@ while(true) {
 ```
 其实这个东西和Case1很像，目前也确实是会存在问题，原因是require存在cache和其中的某些变量会存在全局，而且require来清除里面的变量并不是很方便，所以如下:
 ```js
-const get = require('./case3.js').get;
+let get = require('./case3.js').get;
 // 这里无论你怎么样处理，case3.js里面的circle变量都不回被回收。
 get = null;
 ```
 
-如果使用[require-vm](https://www.npmjs.com/package/require-vm)解决，则把内存泄漏的可能交给自己手动解决，只要你delete应用关系即可被回收，如下：
+如果使用[require-vm](https://www.npmjs.com/package/require-vm)解决，则把内存泄漏的可能交给自己手动解决，只要你修改引用关系即可被回收，如下：
 ```js
 const requireVM = require('require-vm');
-const get = requireVM('./case3.js').get;
+let get = requireVM('./case3.js').get;
 /**
  * 如果使用requireVM，则get值被重置引用关系直接会被解除
  * 所以case3.js里面的circle变量走完get = null就直接被回收
@@ -118,14 +117,14 @@ get = null;
 同时如果存在全局变量的情况下，requireVM依旧可以回收，假设case3.js里面的circle变量是全局变量，则使用这种方式手动控制回收，如下：
 ```js
 const requireVM = require('require-vm');
-const context = {}
-const get = requireVM('./case3.js',context).get;
+let context = {}
+let get = requireVM('./case3.js',context).get;
 /**
  * 因为我们假设circle变量是全局变量
  * 传入上下文，使变量绑定在上下文中
- * 删除上下文则随着上下文一起回收
+ * 重新赋值使变量随着原来的上下文一起回收
  */
-delete context;
+context = {};
 ```
 
 ## Case4: 大循环，无GC机会
