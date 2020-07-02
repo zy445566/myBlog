@@ -26,7 +26,17 @@ while(true) {
   requireVM('./case1.js').leak()
 }
 ```
-看来case1,[require-vm](https://www.npmjs.com/package/require-vm)完美解决。
+看来case1,[require-vm](https://www.npmjs.com/package/require-vm)如果针对不小心使用了内存泄漏的库可以很方便的解决，而如果要你要保留leakArray数组的话，也只需要保证leak方法，不被释放即可，如下。
+```js
+const requireVM = require('require-vm');
+const leak = requireVM('./case1.js').leak;
+// 下面三个方法还保持leakArray数组还存活
+leak();
+leak();
+leak();
+// 但此时只要leak被delete或被重新赋值，即可释放leakArray空间
+delete leak;
+```
 
 ## Case2：无限制设置属性和值
 泄漏案例：
