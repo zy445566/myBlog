@@ -13,6 +13,7 @@
 * [内存泄漏相关(20180517)](./20180517memory-leak/README.md)
     * [实战线上内存泄漏问题(20180517)](./20180517memory-leak/20180517actual/README.md)
     * [使用vm模块解决复杂的内存泄漏问题(20200628)](./20180517memory-leak/20200628vm-save-leak/README.md)
+    * [利用require-vm实现一个更安全的引用，更好的防止内存泄漏篇(20200702)](./20180517memory-leak/20200702require-vm/README.md)
 * [动态规划包quick-dp的拆解和使用(20180531)](./20180531dynamic-programming/README.md)
 * [v8相关(20180708)](./20180708v8/README.md)
     * [V8的编译实战(20180708)](./20180708v8/20180708_ninja_v8/README.md)

@@ -1,0 +1,15 @@
+{
+  "name": "20200628require-vm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "case1-require.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "zy445566",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.15",
+    "require-vm": "^1.0.3"
+  }
+}
