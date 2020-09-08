@@ -38,16 +38,16 @@ const goodApiData = await NCPU.run((data)=>{
   // 这里处理data数据，CPU密集操作
   doSomething(data)
   return data;
-}, [apiData])
+}, [apiData]) //使用数组传参，这有点类似apply
 ```
 使用ncpu果然爽，一个回调函数就把CPU密集型计算搞定了。
 
 
 爽是爽，但目前有两点强制限制：
-* 回调函数不能共用上下文，因为ncpu是使用函数复制的方式来实现的，不会保留函数上下文。
-* 传入参数都是使用 [HTML structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)方式来进行克隆的，不是原值
+* 回调函数不能共用上下文，因为ncpu是使用函数复制的方式来实现的，不会保留函数上下文，所以要求函数是强无副作用函数。
+* 传入参数都是使用 [HTML structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)方式来进行克隆的，而非原值。
 
-但正是这两点强制限制，使得线程更加安全了。因为但多个线程同时操作原值，会导致内存数据更新速度赶不上线程更新的速到，导致另一个线程读取数据不正确。而且我们要处理数据时，通常只需要将大循环和递归计算放入线程的回调函数中，所以这两点强制，并不会太影响使用。
+但正是这两点强制限制，使得线程更加安全了。因为但多个线程同时操作原值，会导致内存数据更新速度赶不上线程更新的速到，导致另一个线程读取数据不正确。而且我们要处理数据时，通常只需要将大循环和递归计算放入线程的回调函数中，所以这两点强制，反而不是坏事。
 
 # 目前ncpu的两个版本
 一个是[ncpu](https://github.com/zy445566/ncpu)专门为node.js环境设计,另一个是[ncpu-web](https://github.com/zy445566/ncpu-web)专门为浏览器环境设计。
@@ -55,5 +55,3 @@ const goodApiData = await NCPU.run((data)=>{
 同时[ncpu](https://github.com/zy445566/ncpu)需要的最低node.js版本是12，而[ncpu-web](https://github.com/zy445566/ncpu-web)浏览器要求是谷歌浏览器至少60以上，火狐57以上即可。
 
 在使用的时候要注意这些问题哦！
-
-
