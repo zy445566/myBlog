@@ -40,6 +40,7 @@
     * [警惕JS数组解构转参数导致爆栈问题(20200508)](./20190115node/20200508danger-arguments/README.md)
     * [使用WebAssembly版本opencv实现人脸识别(20200508)](./20190115node/20200529opencv-getface.js/README.md)
     * [如何更爽的在JS中使用多线程(20200907)](./20190115node/20200907multi-threaded/README.md)
+    * [使用ncpu解锁真·多线程复用(20201023)](./20190115node/20201023ncpu-resue-threaded/README.md)
 * [deno(20190125)](./20190125deno/README.md)
     * [编译deno，deno结构解析(20190125)](./20190125deno/20190125build/README.md)
     * [deno系列第二篇，给deno做rust扩展(20190201)](./20190125deno/20190201exends/README.md)
