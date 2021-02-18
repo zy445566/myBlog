@@ -1,5 +1,4 @@
 # 针对使用非块运行和块运行并发压测对比
-该文使用源码地址：[地址](https://github.com/zy445566/myBlog/tree/master/20180414block-run)
 
 ### 为什么会有这个实验
 由于cnode上的一篇提问 [node.js单线程,是不是就不用消息队列了啊?](https://cnodejs.org/topic/5acc702a042a804dc5196811)<br />
@@ -148,48 +147,48 @@ http.createServer( async (request, response) => {
  }).listen(port);
 ```
 ### 其他代码请看
-[其他代码文件地址](https://github.com/zy445566/myBlog/blob/master/20180414block-run/index.js)
+[其他代码文件地址](https://github.com/zy445566/myBlog/blob/master/20190125deno/20180414block-run/index.js)
 
 ### 运行结果
 #### 乐观锁抗并发
 ##### ab
-![optimisticOnly-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticOnly-ab.png)
+![optimisticOnly-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20190125deno/20180414block-run/img/optimisticOnly-ab.png)
 ##### failed
-![optimisticOnly-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticOnly-failed.png)
+![optimisticOnly-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20190125deno/20180414block-run/img/optimisticOnly-failed.png)
 ##### res
-![optimisticOnly-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticOnly-res.png)
+![optimisticOnly-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20190125deno/20180414block-run/img/optimisticOnly-res.png)
 #### 事务加乐观锁抗并发(和乐观几乎一致，有时事务结果好一个两个)
 ##### ab
-![optimisticTrans-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticTrans-ab.png)
+![optimisticTrans-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20190125deno/20180414block-run/img/optimisticTrans-ab.png)
 ##### failed
-![optimisticTrans-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticTrans-failed.png)
+![optimisticTrans-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20190125deno/20180414block-run/img/optimisticTrans-failed.png)
 ##### res
-![optimisticTrans-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticTrans-res.png)
+![optimisticTrans-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20190125deno/20180414block-run/img/optimisticTrans-res.png)
 
 #### 块执行加乐观锁抗并发
 ##### ab
-![optimisticBlock-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlock-ab.png)
+![optimisticBlock-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20190125deno/20180414block-run/img/optimisticBlock-ab.png)
 ##### failed (一开始看到没有数据失败，感觉还挺神奇的)
-![optimisticBlock-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlock-failed.png)
+![optimisticBlock-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20190125deno/20180414block-run/img/optimisticBlock-failed.png)
 ##### res (看来神奇是必然的，嘿嘿)
-![optimisticBlock-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlock-res.png)
+![optimisticBlock-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20190125deno/20180414block-run/img/optimisticBlock-res.png)
 
 到这里有人会说了，你这个ab压力太小了，当然没什么了，其实我想说，主要还是数据和乐观锁结果太难看了，我要照顾一下。<br />
 大家想看块执行的牛逼之处就让大家看个痛快<br />
 
 #### 块执行加乐观锁抗并发(并发升级版本)
 ##### ab 直接上 -n 10000 -c 100
-![optimisticBlockSuper-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-ab.png)
+![optimisticBlockSuper-ab](https://raw.githubusercontent.com/zy445566/myBlog/master/20190125deno/20180414block-run/img/optimisticBlockSuper-ab.png)
 ##### failed (怎么还没更新失败？神奇？)
-![optimisticBlockSuper-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-failed.png)
+![optimisticBlockSuper-failed](https://raw.githubusercontent.com/zy445566/myBlog/master/20190125deno/20180414block-run/img/optimisticBlockSuper-failed.png)
 ##### res (看来神奇又是必然的，嘿嘿)
-![optimisticBlockSuper-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20180414block-run/img/optimisticBlockSuper-res.png)
+![optimisticBlockSuper-res](https://raw.githubusercontent.com/zy445566/myBlog/master/20190125deno/20180414block-run/img/optimisticBlockSuper-res.png)
 
 ### 最后
 还有谁不服！简直就是并发小神器啊！如果是个人建站抗并发的话足够了！无须事务照样抗并发，性能杠杠的！<br />
 对结果有疑问的同学可以自行测试，注意两点：
 1. 测试前要 curl http://127.0.0.1:8088/clear 保证数据库没有被之前测试污染
-2. sql和全部代码都在[此处](https://github.com/zy445566/myBlog/tree/master/20180414block-run)
+2. sql和全部代码都在[此处](https://github.com/zy445566/myBlog/tree/master/20190125deno/20180414block-run)
 3. 测试前要 npm install 
 4. 此次测试使用的块执行库是block-run的1.0.8版本：
 [块执行包地址](https://www.npmjs.com/package/block-run)

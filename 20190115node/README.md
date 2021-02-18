@@ -1,6 +1,9 @@
 # node
-* [又被node的eventloop坑了，这次是node的锅(20190115)](./20190115eventloop/README.md)
-* [为什么说node具有高并发优势(20190506)](./20190506whyheighqps/README.md)
+* [教你一步一步使用rust写js扩展(20170721)](../20190115node/20170721node-rust-bindings/README.md)
+* [nodejs面向指针编程(20180402)](../20190115node/20180402type-pointer/README.md)
+* [针对使用非块运行和块运行并发压测对比(20180414)](../20190115node/20180414block-run/README.md)
+* [又被node的eventloop坑了，这次是node的锅(20190115)](../20190115node/20190115eventloop/README.md)
+* [为什么说node具有高并发优势(20190506)](../20190115node/20190506whyheighqps/README.md)
 * [如何使用node.js实现内存共享(20191107)](../20190115node/20191107mmap/README.md)
 * [警惕JS数组解构转参数导致爆栈问题(20200508)](../20190115node/20200508danger-arguments/README.md)
 * [使用WebAssembly版本opencv实现人脸识别(20200508)](../20190115node/20200529opencv-getface.js/README.md)
