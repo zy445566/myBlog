@@ -22,6 +22,7 @@
     * [三数之和的优化之旅(20180926)](./20180926leetcode/20180926three-sum/README.md)
     * [解数独(20181023)](./20180926leetcode/20181023sudoku-solver/README.md)
     * [用买卖股票的最佳时机理解动态规划(20181220)](./20180926leetcode/20181220best-time-to-buy-and-sell-stock/README.md)
+    * [一道算法题引发布隆过滤器原理的思考(20210326)](./20180926leetcode/20210326bloom-filter/README.md)
 * [github假面技术(20180929)](./20180929git-fake/README.md)
 * [警惕位移运算<<的坑(20181010)](./20181010left-shift-operator-keng/README.md)
 * [emscripten(20181024)](./20181024emscripten/README.md)
