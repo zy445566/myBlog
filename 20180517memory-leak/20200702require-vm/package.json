@@ -9,7 +9,7 @@
   "author": "zy445566",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "require-vm": "^1.0.3"
   }
 }
