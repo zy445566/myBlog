@@ -2,7 +2,7 @@
 起因是Node.js的开发者提出要升级Node.js镜像版本，原因是Node.js16由于OpenSSL 1.1.1停止维护即将于今年9月份提前停止维护,具体可参考[Node.js16停止维护声明](https://nodejs.org/en/blog/announcements/nodejs16-eol/)，也就意味着我们至少要着手准备Node.js18及以上的镜像了。本以为升个版本也就是改个版本号的事情，但接下来发生的事情足以摧毁一个公司的基建系统。
 
 # 0x1 祸起，事情不是那么简单
-由于大部分公司的系统都是基于CentOS，我们桔厂也是一样，所以我这边首先通过Node.js官网下载最新的Node.js18的CentOS的二进制包,同时打入镜像进行构建，一切都非常顺利，原以为和16一样改个版本号就结束工作，但是直到运行node后，却发生这样的报错。
+由于大部分公司的系统都是基于CentOS，我司也是一样，所以我这边首先通过Node.js官网下载最新的Node.js18的CentOS的二进制包,同时打入镜像进行构建，一切都非常顺利，原以为和16一样改个版本号就结束工作，但是直到运行node后，却发生这样的报错。
 ```sh
 sh-4.2# node
 node: /lib64/libm.so.6: version `GLIBC_2.27' not found (required by node)
