@@ -65,4 +65,4 @@
 * [wasm](./article/wasm/README.md)
     * [使用emscripten实现js直接调用C代码(20181024)](./article/wasm/emscripten-calling-c/README.md)
 * [windows](./article/windows/README.md)
-    * [使用emscripten实现js直接调用C代码(20181024)](./article/wasm/emscripten-calling-c/README.md)
+    * [windows开发烦恼之win10的神器choco(20190715)](./article/windows/choco/README.md)
