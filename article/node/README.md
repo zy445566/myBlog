@@ -14,3 +14,4 @@
 * [内存泄露相关(20180517)](../node/memory-leak/README.md)
 * [deno相关(20190125)](../node/deno/README.md)
 * [quickjs相关(20180517)](../node/quickjs/README.md)
+* [淘宝npm镜像过期引发的问题(20240125)](../node/npmtaobaobye/README.md)

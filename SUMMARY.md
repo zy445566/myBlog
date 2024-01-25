@@ -53,6 +53,7 @@
         * [如何构建一个同时支持node和deno的框架(20190305)](./article/node/deno/frame/README.md)
     * [quickjs相关(20180517)](./article/node/quickjs/README.md)
         * [quickjs初体验(20191029)](./article/node/quickjs/touch/README.md)
+    * [淘宝npm镜像过期引发的问题(20240125)](./article/node/npmtaobaobye/README.md)
 * [v8引擎](./article/v8/README.md)
     * [V8的编译实战](./article/v8/ninja_v8/README.md)
     * [利用v8引擎实现运行js文件](./article/v8/run_js/README.md)
