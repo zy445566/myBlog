@@ -23,6 +23,7 @@
     * [解数独(20181023)](./article/leetcode/sudoku-solver/README.md)
     * [用买卖股票的最佳时机理解动态规划(20181220)](./article/leetcode/best-time-to-buy-and-sell-stock/README.md)
     * [一道算法题引发布隆过滤器原理的思考(20210326)](./article/leetcode/bloom-filter/README.md)
+    * [分享一个构建树的方法(20240322)](./article/leetcode/build-tree/README.md)
 * [Linux](./article/linux/README.md)
     * [教你一步一步利用rsyslog搭建自己的日志系统(20170808)](./article/linux/rsyslog/README.md)
     * [警惕Linux发行版危机和即将或已经发生的重大影响(20230221)](./article/linux/centos-danger/README.md)

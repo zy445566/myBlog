@@ -4,3 +4,4 @@
 * [解数独(20181023)](../leetcode/sudoku-solver/README.md)
 * [用买卖股票的最佳时机理解动态规划(20181220)](../leetcode/best-time-to-buy-and-sell-stock/README.md)
 * [一道算法题引发布隆过滤器原理的思考(20210326)](../leetcode/bloom-filter/README.md)
+* [分享一个构建树的方法(20240322)](../leetcode/build-tree/README.md)
